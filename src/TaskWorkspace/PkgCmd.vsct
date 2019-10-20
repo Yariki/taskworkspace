@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+Copyright (c) Microsoft Corporation. All rights reserved. 
+THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+
+-->
+
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- 
+  This is the file that defines the actual layout and type of the commands.
+  It is divided in different sections (e.g. command definition, command
+  placement, ...), with each defining a specific set of properties.
+  See the comment before each section or the VSCT schema for more details 
+  about how to use it.
+  -->
+
+    <!--
+  The VSCT compiler (the tool that translates this file into the binary format
+  that VisualStudio will consume) has the ability to import external files with
+  definition of constants that can be used inside the definition of your command.
+  The way to include these files is to add an "Extern" tag to your VSCT file and
+  specify the name of the file to reference inside the href attribute.
+  Using this ability of the compiler here, we include some files defining some
+  of the constants that we will use inside the file.
+  -->
+
+    <!--This is the file that defines the IDs for all the commands exposed by VisualStudio.-->
+    <Extern href="stdidcmd.h" />
+
+    <!--This header contains the command ids for the menus provided by the shell.-->
+    <Extern href="vsshlids.h"/>
+
+    <!--
+  The first section of this file is the Commands section. This is where we define
+  the commands, menus and menu groups. This section uses a Guid to identify the
+  package that provides the command defined inside it.
+  Note that the package's GUID is expressed as a symbol that the compiler will
+  translate in an actual GUID at compile time. It is not allow to use an actual
+  GUID for the package attribute.
+  -->
+    <Commands package="guidTaskWorkspaceCommandsPkg">
+        <!--
+    Inside this section we can have different sub-sections: one for the menus, another
+    for the menu groups, one for the buttons (the actual commands), one for the combos
+    and the last one for the bitmaps used. Each element is identified by a command id that
+    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
+    called "command set" and is used to group different command inside a logically related
+    group; your package should define its own command set in order to avoid collisions
+    with command ids defined by other packages.
+    In the VSCT syntax you have to specify this unique identifier using two required attributes:
+    the guid attribute for the command set and the id attribute for the numeric part.
+    -->
+
+        <!-- This is the sub-section that defines the menus and toolbars. -->
+        <Menus>
+            <!--
+      To define a menu element we need an ID, a parent group, a display priority,
+      a menu type, a name and a default text. The exception to requiring a parent
+      is if we are a top level piece of UI (i.e. a toolbar or a context menu. In other
+      words an element that doesn't live on any other command UI, or if we will later 
+      parent our command via a CommandPlacement element to one or more locations).
+      
+      In this example we define a toolbar, so we set the type attribute to Toolbar.
+      
+      Toolbars can set their priority field to affect where they are shown in the toolbar
+      tray. The lower 16 bits of the priority value is taken as a vertical row offset from
+      row 0 (where the standard toolbar is) and is further interpreted as a priority offset
+      within the row the toolbar appears in. So below, by specifying we are at priority 
+      0x0001 we say we want to be in the first row (below the standard toolbar) with a 
+      priority value of 1 relative to other toolbar's priority values that are in that same 
+      row.
+      -->
+            <Menu guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbar" priority="0x0001" type="Toolbar">
+                <Strings>
+                    <!--
+          The String section contains the localizable strings for an element, in this case our
+          toolbar. In this example we are not defining a localizable set of commands, so we do not
+          specify the "language" attribute for the Strings tag. It is possible however to specify
+          different String sections inside any element definition, one for each supported language.
+          -->
+                    <ButtonText>Task Workspace</ButtonText>
+                </Strings>
+            </Menu>
+        </Menus>
+
+        <!--
+    In this section we define new menu groups. A group is a container for menus or buttons (commands); 
+    from a visual point of view you can see the group as the part of a menu contained between separators. 
+    The parent of a group must be a menu/toolbar.
+    -->
+        <Groups>
+
+            <!--
+      Here we create a menu group for the toolbar defined above in the Menus section. We always
+      need a menu group because this is the only possible container for commands.
+      -->
+            <Group guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" priority="0x100">
+                <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbar"/>
+            </Group>
+
+        </Groups>
+
+        <!--
+    This section defines the elements the user can interact with, like a menu command or a button
+    or combo box.
+    -->
+        <Buttons>
+
+            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidSave" priority="0x100" type="Button">
+                <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
+                <Icon guid="saveImage" id="save"/>
+                <Strings>
+                    <ButtonText>Save Workspace</ButtonText>
+                </Strings>
+            </Button>
+
+            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidLoad" priority="0x100" type="Button">
+                <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
+                <Icon guid="loadImage" id="load"/>
+                <Strings>
+                    <ButtonText>Load Workspace</ButtonText>
+                </Strings>
+            </Button>
+
+            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidDelete" priority="0x100" type="Button">
+                <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
+                <Icon guid="deleteImage" id="delete"/>
+                <Strings>
+                    <ButtonText>Delete Workspace</ButtonText>
+                </Strings>
+            </Button>
+
+
+
+        </Buttons>
+
+        <Combos>
+            <Combo guid="guidTaskWorkspaceCmdSet" id="cmdidWorkspaces" priority="0x102" defaultWidth="100" idCommandList="cmdidWorkspacesGetList" type="DynamicCombo">
+                <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
+                <CommandFlag>IconAndText</CommandFlag>
+                <CommandFlag>CommandWellOnly</CommandFlag>
+                <Strings>
+                    <ButtonText>Select Workspace</ButtonText>
+                </Strings>
+
+            </Combo>
+        </Combos>
+
+        <Bitmaps>
+            <Bitmap guid="saveImage" href="Resources\save.png" usedList="save"/>
+
+            <Bitmap guid="loadImage" href="Resources\load.png" usedList="load"/>
+
+            <Bitmap guid="deleteImage" href="Resources\delete.png" usedList="delete"/>
+
+        </Bitmaps>
+    </Commands>
+
+
+    <!--
+  Inside this section, we have the ability to place menu groups inside some other menu or
+  menu / commands inside other groups.
+  For instance, it is possible to place one of VisualStudio's menus or commands inside one of our
+  groups or one of our groups inside a menu defined somewhere else.
+  -->
+    <CommandPlacements>
+        
+        <!--Now we place a previously defined group inside the Solution Explorer's toolbar.-->
+        <!--<CommandPlacement guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" priority="0x600">
+            <Parent guid="guidSHLMainMenu" id="IDM_VS_TOOL_PROJWIN"/>
+        </CommandPlacement>-->
+    </CommandPlacements>
+
+    <!--
+  In this example we have always used descriptive names for the GUIDs and numeric IDs inside the definition
+  of the elements. The VSCT compiler actually enforces the usage of these names instead of hard-coding
+  the numbers in the definitions.
+
+  We have also seen that the compiler can read some of these constants from the files imported with the
+  "Extern" tag at the beginning of the file. The problem is then how to define the other constants.
+
+  The "Symbols" section is where this association between descriptive names and actual values happen.
+  -->
+    <Symbols>
+        <!--
+    The definition of symbols in a VSCT file derives from the way the IDs of the elements are defined
+    by the command table. We have seen that the ID is a GUID/Number pair, where the GUID is also called
+    Command Set and it provides the context in which the numeric ID is evaluated.
+
+    It makes then sense for the VSCT schema to define the GuidSymbl tag as top level element containig
+    the definiton of the numeric IDs.
+    -->
+
+        <!--The first GUID defined here is the one for the package. It does not contains numeric IDs.-->
+        <GuidSymbol name="guidTaskWorkspaceCommandsPkg" value="{32263676-006A-44A3-A8D7-2617C97E4B7E}" />
+
+
+        <!--The GUID for the command set is the one that contains the numeric IDs used in this sample
+        with the only exception of the one used for the bitmap.-->
+        <GuidSymbol name="guidTaskWorkspaceCmdSet" value="{8E5CB35A-3D00-4264-81D4-4BE05370E6DF}">
+            <IDSymbol name="TaskWorkspaceToolbar" value="0x101" />
+            <IDSymbol name="TaskWorkspaceToolbarGroup" value="0x1011" />
+            <IDSymbol name="cmdidSave" value="0x2001" />
+            <IDSymbol name="cmdidLoad" value="0x2002" />
+            <IDSymbol name="cmdidDelete" value="0x2003" />
+            <IDSymbol name="cmdidWorkspacesGetList" value="0x2004" />
+            <IDSymbol name="cmdidWorkspaces" value="0x2005"/>
+        </GuidSymbol>
+
+        <GuidSymbol name="saveImage" value="{831D828D-5DFF-47F5-851A-8439EDEA5691}">
+            <IDSymbol name="save" value="1"/>
+        </GuidSymbol>
+
+        <GuidSymbol name="loadImage" value="{FA6FDF13-A8A1-44D2-ABDD-C4D6853E4AB5}">
+            <IDSymbol name="load" value="1"/>
+        </GuidSymbol>
+
+        <GuidSymbol name="deleteImage" value="{190DDD94-471A-4B3D-B4EA-5B9D82D8767F}">
+            <IDSymbol name="delete" value="1"/>
+        </GuidSymbol>
+
+
+    </Symbols>
+</CommandTable>
