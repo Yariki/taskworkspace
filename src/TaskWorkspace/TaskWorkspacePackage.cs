@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.VisualStudio.Shell;
+using TaskWorkspace.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 
 namespace TaskWorkspace
@@ -27,16 +28,13 @@ namespace TaskWorkspace
 
 
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(TaskWorkspacePackage.PackageGuidString)]
+    [Guid(PkgGuids.GuidTaskWorkspaceCommandsPkg_string)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ComVisible(true)]
     public sealed class TaskWorkspacePackage : AsyncPackage
     {
-        /// <summary>
-        /// TaskWorkspacePackage GUID string.
-        /// </summary>
-        public const string PackageGuidString = "af93583a-ce80-4bb0-80ff-63aa2b882198";
+        private CommandManager _commandManager;
 
         #region Package Members
 
@@ -52,9 +50,13 @@ namespace TaskWorkspace
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            _commandManager = new CommandManager(this);
+        }
 
-            var dte = await GetServiceAsync(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-
+        protected override void Dispose(bool disposing)
+        {
+            _commandManager.Dispose();
+            base.Dispose(disposing);
         }
 
         #endregion
