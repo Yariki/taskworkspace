@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell.Interop;
 using TaskWorkspace.DataAccess;
 using TaskWorkspace.EventArguments;
@@ -8,17 +9,17 @@ namespace TaskWorkspace.Services
 {
     public class WorkspaceService : IDisposable
     {
-
-        private IVsSolution _solution;
-        private EnvDTE.DTE _dte;
-
-
-        private WorkspaceRepository _repository;
-        private SolutionEventsService _eventsService;
-        private IEnumerable<string> _workspaces;
+        private DTE _dte;
+        private readonly SolutionEventsService _eventsService;
         private bool _isSolutionOpened;
 
-        public WorkspaceService(IVsSolution solution, EnvDTE.DTE dte)
+
+        private readonly WorkspaceRepository _repository;
+
+        private readonly IVsSolution _solution;
+        private IEnumerable<string> _workspaces;
+
+        public WorkspaceService(IVsSolution solution, DTE dte)
         {
             _solution = solution;
             _dte = dte;
@@ -29,7 +30,6 @@ namespace TaskWorkspace.Services
 
             _eventsService.SolutionOpened += SolutionOpened;
             _eventsService.SolutionClosed += SolutionClosed;
-
         }
 
         public string SelectedWorkspace { get; set; }
@@ -51,17 +51,14 @@ namespace TaskWorkspace.Services
 
         public void SaveWorkspace()
         {
-
         }
-        
+
         public void LoadWorkspace()
         {
-
         }
 
         public void DeleteWorkspace()
         {
-
         }
 
         private void SolutionOpened(object sender, OpenedSolutionArgs e)

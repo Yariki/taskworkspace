@@ -51,6 +51,7 @@
     <Compile Include="DataAccess\WorkspaceRepository.cs" />
     <Compile Include="EventArguments\OpenedSolutionArgs.cs" />
     <Compile Include="Infrastructure\CommandManager.cs" />
+    <Compile Include="Infrastructure\WorkspaceLogger.cs" />
     <Compile Include="Model\Breakpoint.cs" />
     <Compile Include="Model\Document.cs" />
     <Compile Include="Model\Workspace.cs" />
@@ -62,6 +63,12 @@
     <Compile Include="TaskWorkspacePackage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -86,6 +93,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="16.0.202" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.3.2099" />
+    <PackageReference Include="NLog">
+      <Version>4.6.8</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="PkgCmd.vsct">

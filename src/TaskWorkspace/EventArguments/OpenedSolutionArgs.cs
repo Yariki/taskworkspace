@@ -10,6 +10,5 @@ namespace TaskWorkspace.EventArguments
         }
 
         public uint NewSolutionCookie { get; set; }
-
     }
 }

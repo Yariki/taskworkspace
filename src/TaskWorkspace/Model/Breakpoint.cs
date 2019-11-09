@@ -9,14 +9,13 @@ namespace TaskWorkspace.Model
 
         public int Line { get; set; }
 
-        public static Breakpoint CreateBreakpoint(Break breakpoint) 
+        public static Breakpoint CreateBreakpoint(Break breakpoint)
         {
-            return new Breakpoint()
+            return new Breakpoint
             {
                 Filename = breakpoint.File,
                 Line = breakpoint.FileLine
             };
         }
-
     }
 }

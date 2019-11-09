@@ -7,12 +7,12 @@ namespace TaskWorkspace.Services
     public class SolutionEventsService : IDisposable, IVsSolutionEvents
     {
         private bool _disposed;
-        private IVsSolution _solution;
+        private readonly IVsSolution _solution;
         private uint _solutionCookie;
 
-        public EventHandler<OpenedSolutionArgs> SolutionOpened;
-
         public EventHandler SolutionClosed;
+
+        public EventHandler<OpenedSolutionArgs> SolutionOpened;
 
         public SolutionEventsService(IVsSolution solution)
         {
@@ -22,10 +22,7 @@ namespace TaskWorkspace.Services
 
         public void Dispose()
         {
-            if(_disposed  || _solutionCookie == 0)
-            {
-                return;
-            }
+            if (_disposed || _solutionCookie == 0) return;
 
             _disposed = true;
             _solution.UnadviseSolutionEvents(_solutionCookie);
@@ -64,7 +61,7 @@ namespace TaskWorkspace.Services
 
         public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
         {
-            SolutionOpened?.Invoke(this, new OpenedSolutionArgs((uint)fNewSolution));
+            SolutionOpened?.Invoke(this, new OpenedSolutionArgs((uint) fNewSolution));
             return 0;
         }
 
@@ -80,7 +77,7 @@ namespace TaskWorkspace.Services
 
         public int OnAfterCloseSolution(object pUnkReserved)
         {
-            SolutionClosed?.Invoke(this,new EventArgs());
+            SolutionClosed?.Invoke(this, new EventArgs());
             return 0;
         }
     }

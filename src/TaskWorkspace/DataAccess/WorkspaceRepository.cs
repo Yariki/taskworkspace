@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using Microsoft.VisualStudio.Shell.Interop;
 using LiteDB;
+using Microsoft.VisualStudio.Shell.Interop;
 using TaskWorkspace.Model;
 
 namespace TaskWorkspace.DataAccess
@@ -12,16 +11,16 @@ namespace TaskWorkspace.DataAccess
     public class WorkspaceRepository
     {
         private readonly string _dbName = "_workspaces.db";
-        private IVsSolution _solution;
+        private readonly IVsSolution _solution;
 
         public WorkspaceRepository(IVsSolution solution)
         {
             _solution = solution;
-            
+
             Init();
         }
 
-        private string SolutionFolder 
+        private string SolutionFolder
         {
             get
             {
@@ -42,7 +41,7 @@ namespace TaskWorkspace.DataAccess
 
         private LiteDatabase GetDatabase(string folder)
         {
-            return new LiteDatabase(Path.Combine(folder,_dbName));
+            return new LiteDatabase(Path.Combine(folder, _dbName));
         }
 
         public IEnumerable<string> GetWorkspaces()
@@ -57,10 +56,7 @@ namespace TaskWorkspace.DataAccess
 
         public bool IsExist(string name)
         {
-            if(string.IsNullOrEmpty(name))
-            {
-                return false;
-            }
+            if (string.IsNullOrEmpty(name)) return false;
 
             using (var db = GetDatabase(SolutionFolder))
             {
@@ -83,14 +79,11 @@ namespace TaskWorkspace.DataAccess
 
         public void SaveWorkspace(string name, List<Document> documents, List<Breakpoint> breakpoints)
         {
-            if(string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
             using (var db = GetDatabase(SolutionFolder))
             {
-                var workspace = new Workspace()
+                var workspace = new Workspace
                 {
                     Name = name,
                     Documents = documents,
@@ -103,10 +96,7 @@ namespace TaskWorkspace.DataAccess
 
         public void DeleteWorkspace(string name)
         {
-            if(string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
             using (var db = GetDatabase(SolutionFolder))
             {
@@ -114,6 +104,5 @@ namespace TaskWorkspace.DataAccess
                 workspaces.Delete(x => x.Name == name);
             }
         }
-
     }
 }
