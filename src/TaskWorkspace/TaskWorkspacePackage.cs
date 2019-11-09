@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using TaskWorkspace.Infrastructure;
 using Task = System.Threading.Tasks.Task;
@@ -51,6 +52,7 @@ namespace TaskWorkspace
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             _commandManager = new CommandManager(this);
+            
         }
 
         protected override void Dispose(bool disposing)
