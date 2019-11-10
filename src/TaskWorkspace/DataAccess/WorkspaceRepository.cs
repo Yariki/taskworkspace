@@ -17,7 +17,7 @@ namespace TaskWorkspace.DataAccess
         {
             _solution = solution;
 
-            Init();
+            //Init();
         }
 
         private string SolutionFolder
@@ -89,8 +89,32 @@ namespace TaskWorkspace.DataAccess
                     Documents = documents,
                     Breakpoints = breakpoints
                 };
-                db.GetCollection<Workspace>().Insert(workspace);
-                db.GetCollection<Workspace>().EnsureIndex(x => x.Name);
+
+                var workspaces = db.GetCollection<Workspace>();
+                if(workspaces != null)
+                {
+                    workspaces.Insert(workspace);
+                    workspaces.EnsureIndex(x => x.Name);
+                }
+            }
+        }
+
+        public void UpdateWorkspace(string name,List<Document> documents,List<Breakpoint> breakpoints)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+
+            using (var db = GetDatabase(SolutionFolder))
+            {
+                var workspace = GetWorkspace(name);
+                workspace.Documents = documents;
+                workspace.Breakpoints = breakpoints;
+
+                var workspaces = db.GetCollection<Workspace>();
+                if(workspaces != null)
+                {
+                    workspaces.Update(workspace);
+                    workspaces.EnsureIndex(x => x.Name);
+                }
             }
         }
 

@@ -146,6 +146,11 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
                 <CommandFlag>CommandWellOnly</CommandFlag>
                 <Strings>
                     <ButtonText>Select Workspace</ButtonText>
+                    <MenuText>Select Workspace: </MenuText>
+                    <ToolTipText>Select Workspace</ToolTipText>
+                    <CanonicalName>Select Workspace</CanonicalName>
+                    <LocCanonicalName>Select Workspace</LocCanonicalName>
+                    <CommandName>Select Workspace</CommandName>
                 </Strings>
 
             </Combo>

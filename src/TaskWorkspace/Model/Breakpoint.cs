@@ -1,10 +1,14 @@
-﻿using Break = EnvDTE.Breakpoint;
+﻿using LiteDB;
+using Break = EnvDTE.Breakpoint;
 
 
 namespace TaskWorkspace.Model
 {
     public class Breakpoint
     {
+        [BsonId(true)]
+        public int Id { get; set; }
+
         public string Filename { get; set; }
 
         public int Line { get; set; }

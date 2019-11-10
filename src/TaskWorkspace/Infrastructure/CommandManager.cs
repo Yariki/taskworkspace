@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using EnvDTE;
@@ -29,22 +30,22 @@ namespace TaskWorkspace.Infrastructure
             if (ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService service)
             {
                 foreach (var valuePair in _handlers)
-                    service.AddCommand(new MenuCommand(valuePair.Value,
+                    service.AddCommand(new OleMenuCommand(valuePair.Value,
                         new CommandID(PkgGuids.GuidTaskWorkspaceCmdSet, valuePair.Key)));
 
                 var cmdSelectedWorkspaceId = new CommandID(PkgGuids.GuidTaskWorkspaceCmdSet, PkgCmdId.cmdidWorkspaces);
-                var workspaceCommand = new MenuCommand(SelectedWorkspaceCallback, cmdSelectedWorkspaceId);
+                var workspaceCommand = new OleMenuCommand(new EventHandler(SelectedWorkspaceCallback), cmdSelectedWorkspaceId);
 
 
                 var cmdGetWorkspacesId =
                     new CommandID(PkgGuids.GuidTaskWorkspaceCmdSet, PkgCmdId.cmdidWorkspacesGetList);
-                var getWorkspacesCommand = new MenuCommand(GetWorkspacesCallback, cmdGetWorkspacesId);
+                var getWorkspacesCommand = new OleMenuCommand(new EventHandler(GetWorkspacesCallback), cmdGetWorkspacesId);
 
                 service.AddCommand(workspaceCommand);
                 service.AddCommand(getWorkspacesCommand);
             }
 
-            _workspaceService = new WorkspaceService(ServiceProvider.GetService(typeof(IVsSolution)) as IVsSolution,
+            _workspaceService = new WorkspaceService(ServiceProvider, ServiceProvider.GetService(typeof(IVsSolution)) as IVsSolution,
                 ServiceProvider.GetService(typeof(DTE)) as DTE);
         }
 
@@ -58,30 +59,6 @@ namespace TaskWorkspace.Infrastructure
 
         private void SaveCommandCallback(object sender, EventArgs args)
         {
-            var dte = ServiceProvider.GetService(typeof(DTE)) as DTE;
-
-            OutputCommandString("Save Command");
-
-            foreach (Document dteDocument in dte.Documents)
-            {
-                //OutputCommandString(dteDocument.FullName);
-            }
-
-            //dte.Documents.Open("c:\\Users\\Yariki\\source\\repos\\WindowsFormsApp1\\WindowsFormsApp1\\Program.cs");
-
-            foreach (Breakpoint breakpoint in dte.Debugger.Breakpoints)
-            {
-                //OutputCommandString($"File: {breakpoint.File}, Line: {breakpoint.FileLine}");
-            }
-
-
-            dte.Debugger.Breakpoints.Add(
-                File: "c:\\Users\\Yariki\\source\\repos\\WindowsFormsApp1\\WindowsFormsApp1\\Program.cs", Line: 16);
-
-            dte.Debugger.Breakpoints.Add(
-                File: "c:\\Users\\Yariki\\source\\repos\\WindowsFormsApp1\\WindowsFormsApp1\\Program.cs", Line: 18);
-
-
             _workspaceService?.SaveWorkspace();
         }
 
@@ -97,11 +74,15 @@ namespace TaskWorkspace.Infrastructure
 
         private void SelectedWorkspaceCallback(object sender, EventArgs args)
         {
+            
             if (!(args is OleMenuCmdEventArgs menuArgs))
                 return;
 
+            
             var newValue = menuArgs.InValue as string;
             var vOut = menuArgs.OutValue;
+
+            OutputCommandString($"SelectedWorkspace Callback: {newValue}");
 
             if (vOut != IntPtr.Zero)
                 Marshal.GetNativeVariantForObject(_workspaceService.SelectedWorkspace, vOut);
@@ -110,8 +91,12 @@ namespace TaskWorkspace.Infrastructure
 
         private void GetWorkspacesCallback(object sender, EventArgs args)
         {
+            
             if (!(args is OleMenuCmdEventArgs menuArgs))
                 return;
+
+            OutputCommandString($"GetWorkspaces Callback: {args is OleMenuCmdEventArgs}");
+
             var inParam = menuArgs.InValue;
             var vOut = menuArgs.OutValue;
 
@@ -121,7 +106,7 @@ namespace TaskWorkspace.Infrastructure
             }
             else if(vOut != IntPtr.Zero)
             {
-                Marshal.GetNativeVariantForObject(_workspaceService.GetWorkspaces(),vOut);
+                Marshal.GetNativeVariantForObject(_workspaceService.GetWorkspaces().ToArray<string>(), vOut);
             }
             else
             {

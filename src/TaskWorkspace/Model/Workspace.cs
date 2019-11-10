@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using LiteDB;
 
 namespace TaskWorkspace.Model
 {
@@ -9,6 +10,9 @@ namespace TaskWorkspace.Model
             Documents = new List<Document>();
             Breakpoints = new List<Breakpoint>();
         }
+
+        [BsonId(true)]
+        public int Id { get; set; }
 
         public string Name { get; set; }
 
