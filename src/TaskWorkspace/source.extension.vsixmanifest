@@ -6,10 +6,12 @@
         <Identity Id="TaskWorkspace.13eff24b-4d81-4989-9fda-b3b00399d274" Version="1.0" Language="en-US"
                   Publisher="Yaroslav Lisovskyi" />
         <DisplayName>TaskWorkspace</DisplayName>
-        <Description>Empty VSIX Project.</Description>
+        <Description xml:space="preserve">Extension for saving/loading workspace documents and breakpoints, in case for fast swithing between tasks.</Description>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
+        <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Pro" />
+        <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Enterprise" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual"
