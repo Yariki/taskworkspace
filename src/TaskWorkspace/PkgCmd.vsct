@@ -75,7 +75,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
       priority value of 1 relative to other toolbar's priority values that are in that same 
       row.
       -->
-            <Menu guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbar" priority="0x0001" type="Toolbar">
+            <Menu guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbar" priority="0x0000" type="Toolbar">
                 <Strings>
                     <!--
           The String section contains the localizable strings for an element, in this case our
@@ -99,7 +99,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
       Here we create a menu group for the toolbar defined above in the Menus section. We always
       need a menu group because this is the only possible container for commands.
       -->
-            <Group guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" priority="0x100">
+            <Group guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" priority="0xFF45">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbar"/>
             </Group>
 
@@ -109,9 +109,21 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     This section defines the elements the user can interact with, like a menu command or a button
     or combo box.
     -->
+        <Combos>
+            <Combo guid="guidTaskWorkspaceCmdSet" id="cmdidWorkspaces" priority="0x0010" defaultWidth="100" idCommandList="cmdidWorkspacesGetList" type="DynamicCombo">
+                <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
+                <CommandFlag>IconAndText</CommandFlag>
+                <CommandFlag>CommandWellOnly</CommandFlag>
+                <Strings>
+                    <ButtonText>Select Workspace</ButtonText>
+                </Strings>
+
+            </Combo>
+        </Combos>
+
         <Buttons>
 
-            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidSave" priority="0x100" type="Button">
+            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidSave" priority="0x0100" type="Button">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
                 <Icon guid="saveImage" id="save"/>
                 <Strings>
@@ -119,7 +131,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
                 </Strings>
             </Button>
 
-            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidLoad" priority="0x100" type="Button">
+            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidLoad" priority="0x0200" type="Button">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
                 <Icon guid="loadImage" id="load"/>
                 <Strings>
@@ -127,7 +139,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
                 </Strings>
             </Button>
 
-            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidDelete" priority="0x100" type="Button">
+            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidDelete" priority="0x0300" type="Button">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
                 <Icon guid="deleteImage" id="delete"/>
                 <Strings>
@@ -138,23 +150,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 
         </Buttons>
-
-        <Combos>
-            <Combo guid="guidTaskWorkspaceCmdSet" id="cmdidWorkspaces" priority="0x102" defaultWidth="100" idCommandList="cmdidWorkspacesGetList" type="DynamicCombo">
-                <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
-                <CommandFlag>IconAndText</CommandFlag>
-                <CommandFlag>CommandWellOnly</CommandFlag>
-                <Strings>
-                    <ButtonText>Select Workspace</ButtonText>
-                    <MenuText>Select Workspace: </MenuText>
-                    <ToolTipText>Select Workspace</ToolTipText>
-                    <CanonicalName>Select Workspace</CanonicalName>
-                    <LocCanonicalName>Select Workspace</LocCanonicalName>
-                    <CommandName>Select Workspace</CommandName>
-                </Strings>
-
-            </Combo>
-        </Combos>
 
         <Bitmaps>
             <Bitmap guid="saveImage" href="Resources\save.png" usedList="save"/>
@@ -177,7 +172,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
         
         <!--Now we place a previously defined group inside the Solution Explorer's toolbar.-->
         <!--<CommandPlacement guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" priority="0x600">
-            <Parent guid="guidSHLMainMenu" id="IDM_VS_TOOL_PROJWIN"/>
+            <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbar"/>
         </CommandPlacement>-->
     </CommandPlacements>
 
