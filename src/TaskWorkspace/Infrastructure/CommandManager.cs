@@ -82,8 +82,6 @@ namespace TaskWorkspace.Infrastructure
             var newValue = menuArgs.InValue as string;
             var vOut = menuArgs.OutValue;
 
-            OutputCommandString($"SelectedWorkspace Callback: {newValue}");
-
             if (vOut != IntPtr.Zero)
                 Marshal.GetNativeVariantForObject(_workspaceService.SelectedWorkspace, vOut);
             else if (newValue != null) _workspaceService.SelectedWorkspace = newValue;
@@ -94,8 +92,6 @@ namespace TaskWorkspace.Infrastructure
             
             if (!(args is OleMenuCmdEventArgs menuArgs))
                 return;
-
-            OutputCommandString($"GetWorkspaces Callback: {args is OleMenuCmdEventArgs}");
 
             var inParam = menuArgs.InValue;
             var vOut = menuArgs.OutValue;
