@@ -13,36 +13,33 @@ namespace TaskWorkspace.DataAccess
     {
         private readonly string _dbName = "_workspaces.db";
         private readonly IVsSolution _solution;
+        enum SolutionInfo
+        {
+            Folder,
+            Name,
+            UserOptionFile
+        }
 
         public WorkspaceRepository(IVsSolution solution)
         {
             _solution = solution;
 
-            //Init();
         }
 
-        private string SolutionFolder
+        private string SolutionFolder => GetSolutionInfo(SolutionInfo.Folder);
+
+        private string SolutionName
         {
             get
             {
-                string solutionFolder, solutionName, optFile;
-                _solution.GetSolutionInfo(out solutionFolder, out solutionName, out optFile);
-
-                return solutionFolder;
+                var name = Path.GetFileNameWithoutExtension(GetSolutionInfo(SolutionInfo.Name));
+                return name;
             }
-        }
-
-        private void Init()
-        {
-            var mapper = BsonMapper.Global;
-            mapper.Entity<Workspace>()
-                .DbRef(x => x.Documents, "documents")
-                .DbRef(x => x.Breakpoints, "breakpoints");
-        }
+        } 
 
         private LiteDatabase GetDatabase(string folder)
         {
-            return new LiteDatabase(Path.Combine(folder, _dbName));
+            return new LiteDatabase(Path.Combine(folder, $"{SolutionName}.db"));
         }
 
         public IEnumerable<string> GetWorkspaces()
@@ -128,5 +125,24 @@ namespace TaskWorkspace.DataAccess
                 workspaces.Delete(x => x.Name == name);
             }
         }
+
+
+        private string GetSolutionInfo(SolutionInfo type)
+        {
+            string solutionFolder, solutionName, optFile;
+            _solution.GetSolutionInfo(out solutionFolder, out solutionName, out optFile);
+
+            switch (type)
+            {
+                case SolutionInfo.Folder:
+                    return solutionFolder;
+                case SolutionInfo.Name:
+                    return solutionName;
+                case SolutionInfo.UserOptionFile:
+                    return optFile;
+            }
+            return string.Empty;
+        }
+
     }
 }
