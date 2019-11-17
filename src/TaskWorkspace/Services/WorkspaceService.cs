@@ -81,6 +81,7 @@ namespace TaskWorkspace.Services
                 var items = GetWorkspaceItem();
                 _repository.SaveWorkspace(SelectedWorkspace,items.Item1, items.Item2);
             }
+            _workspaces = _repository.GetWorkspaces();
         }
 
         private (List<WorkspaceDocument>, List<WorkspaceBreakpoint>) GetWorkspaceItem()
@@ -134,7 +135,7 @@ namespace TaskWorkspace.Services
         {
             _isSolutionOpened = true;
             var workspaces = _repository.GetWorkspaces();
-            _workspaces = workspaces.Any() ? workspaces :   new List<string>();
+            _workspaces = workspaces ?? new List<string>();
         }
 
         private void SolutionClosed(object sender, EventArgs e)

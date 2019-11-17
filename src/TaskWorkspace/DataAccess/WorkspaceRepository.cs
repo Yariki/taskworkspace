@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using LiteDB;
 using Microsoft.VisualStudio.Shell.Interop;
+using TaskWorkspace.Infrastructure;
 using TaskWorkspace.Model;
 
 namespace TaskWorkspace.DataAccess
@@ -49,8 +50,7 @@ namespace TaskWorkspace.DataAccess
             using (var db = GetDatabase(SolutionFolder))
             {
                 var workspaces = db.GetCollection<Workspace>();
-
-                return workspaces.Find(o => true).Select(w => w.Name);
+                return workspaces.Find(o => true).Select(w => w.Name).ToList();
             }
         }
 
@@ -93,7 +93,7 @@ namespace TaskWorkspace.DataAccess
                 var workspaces = db.GetCollection<Workspace>();
                 if(workspaces != null)
                 {
-                    workspaces.Insert(workspace);
+                    var result = workspaces.Insert(workspace);
                     workspaces.EnsureIndex(x => x.Name);
                 }
             }
@@ -112,7 +112,7 @@ namespace TaskWorkspace.DataAccess
                 var workspaces = db.GetCollection<Workspace>();
                 if(workspaces != null)
                 {
-                    workspaces.Update(workspace);
+                    var result = workspaces.Update(workspace);
                     workspaces.EnsureIndex(x => x.Name);
                 }
             }

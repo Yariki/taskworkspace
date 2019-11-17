@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.Debugger.Clr.Cpp;
 using NLog;
@@ -46,6 +47,15 @@ namespace TaskWorkspace.Infrastructure
         public void Info(string message)
         {
             Logger?.Info(message);
+        }
+
+        public void Info(string message,IEnumerable<string> values)
+        {
+            Logger?.Info(message);
+            foreach (var value in values)
+            {
+                Logger?.Info(value);
+            }
         }
 
         public void Warn(string message)

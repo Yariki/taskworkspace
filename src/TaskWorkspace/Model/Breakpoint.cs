@@ -21,5 +21,7 @@ namespace TaskWorkspace.Model
                 Line = breakpoint.FileLine
             };
         }
+
+        public override string ToString() => $"{Filename} : {Line}";
     }
 }

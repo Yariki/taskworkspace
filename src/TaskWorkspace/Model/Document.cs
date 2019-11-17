@@ -1,4 +1,5 @@
-﻿using LiteDB;
+﻿using System.Text;
+using LiteDB;
 
 namespace TaskWorkspace.Model
 {
@@ -8,5 +9,8 @@ namespace TaskWorkspace.Model
         public int Id { get; set; }
 
         public string Filename { get; set; }
+
+        public override string ToString() => Filename;
+       
     }
 }

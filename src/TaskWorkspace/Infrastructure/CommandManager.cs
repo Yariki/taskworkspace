@@ -102,7 +102,9 @@ namespace TaskWorkspace.Infrastructure
             }
             else if(vOut != IntPtr.Zero)
             {
-                Marshal.GetNativeVariantForObject(_workspaceService.GetWorkspaces().ToArray<string>(), vOut);
+
+                var workspaces = _workspaceService.GetWorkspaces().ToArray<string>();
+                Marshal.GetNativeVariantForObject(workspaces, vOut);
             }
             else
             {
@@ -113,21 +115,11 @@ namespace TaskWorkspace.Infrastructure
 
         private void OutputCommandString(string text)
         {
-            // Build the string to write on the debugger and Output window.
-            var outputText = new StringBuilder();
-            outputText.Append(" ================================================\n");
-            outputText.AppendFormat("  MenuAndCommands: {0}\n", text);
-            outputText.Append(" ================================================\n\n");
-
             var windowPane = (IVsOutputWindowPane) ServiceProvider.GetService(typeof(SVsGeneralOutputWindowPane));
-            if (null == windowPane)
+            if(windowPane != null && ErrorHandler.Failed(windowPane.OutputString(text)))
             {
-                Debug.WriteLine("Failed to get a reference to the Output window General pane");
-                return;
+                WorkspaceLogger.Log.Error("Failed to write on the Output Window");
             }
-
-            if (ErrorHandler.Failed(windowPane.OutputString(outputText.ToString())))
-                Debug.WriteLine("Failed to write on the Output window");
         }
     }
 }
