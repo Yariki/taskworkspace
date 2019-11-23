@@ -11,7 +11,6 @@ namespace TaskWorkspace.DataAccess
 {
     public class WorkspaceRepository
     {
-        private readonly string _dbName = "_workspaces.db";
         private readonly IVsSolution _solution;
         enum SolutionInfo
         {
@@ -66,7 +65,6 @@ namespace TaskWorkspace.DataAccess
             using (var db = GetDatabase(SolutionFolder))
             {
                 var workspace = db.GetCollection<Workspace>()
-                    .Include(x => x.Documents)
                     .Include(x => x.Breakpoints)
                     .Find(w => w.Name == name).FirstOrDefault();
 
@@ -74,7 +72,7 @@ namespace TaskWorkspace.DataAccess
             }
         }
 
-        public void SaveWorkspace(string name, List<Document> documents, List<Breakpoint> breakpoints)
+        public void SaveWorkspace(string name,List<Breakpoint> breakpoints, string windowsBase64)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
@@ -83,8 +81,8 @@ namespace TaskWorkspace.DataAccess
                 var workspace = new Workspace
                 {
                     Name = name,
-                    Documents = documents,
-                    Breakpoints = breakpoints
+                    Breakpoints = breakpoints,
+                    WindowsBase64 = windowsBase64
                 };
 
                 var workspaces = db.GetCollection<Workspace>();
@@ -96,15 +94,15 @@ namespace TaskWorkspace.DataAccess
             }
         }
 
-        public void UpdateWorkspace(string name,List<Document> documents,List<Breakpoint> breakpoints)
+        public void UpdateWorkspace(string name,List<Breakpoint> breakpoints, string windowsBase64)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
             using (var db = GetDatabase(SolutionFolder))
             {
                 var workspace = GetWorkspace(name);
-                workspace.Documents = documents;
                 workspace.Breakpoints = breakpoints;
+                workspace.WindowsBase64 = windowsBase64;
 
                 var workspaces = db.GetCollection<Workspace>();
                 if(workspaces != null)

@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="DataAccess\WorkspaceRepository.cs" />
     <Compile Include="EventArguments\OpenedSolutionArgs.cs" />
+    <Compile Include="Helpers\NativeHelpers.cs" />
+    <Compile Include="Helpers\ServiceExtensions.cs" />
     <Compile Include="Infrastructure\CommandManager.cs" />
     <Compile Include="Infrastructure\WorkspaceLogger.cs" />
     <Compile Include="Model\Breakpoint.cs" />

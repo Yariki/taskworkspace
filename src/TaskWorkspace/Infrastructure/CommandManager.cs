@@ -46,7 +46,7 @@ namespace TaskWorkspace.Infrastructure
             }
 
             _workspaceService = new WorkspaceService(ServiceProvider, ServiceProvider.GetService(typeof(IVsSolution)) as IVsSolution,
-                ServiceProvider.GetService(typeof(DTE)) as DTE);
+                ServiceProvider.GetService(typeof(DTE)) as DTE,ServiceProvider.GetService(typeof(IVsUIShellDocumentWindowMgr)) as IVsUIShellDocumentWindowMgr);
         }
 
         private IServiceProvider ServiceProvider => _package;

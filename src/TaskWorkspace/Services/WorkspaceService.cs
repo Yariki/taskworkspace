@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows.Documents;
 using EnvDTE;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NLog.LayoutRenderers.Wrappers;
 using TaskWorkspace.DataAccess;
 using TaskWorkspace.EventArguments;
+using TaskWorkspace.Helpers;
 using TaskWorkspace.Infrastructure;
+using IServiceProvider = System.IServiceProvider;
 using WorkspaceDocument = TaskWorkspace.Model.Document;
 using WorkspaceBreakpoint = TaskWorkspace.Model.Breakpoint;
 
@@ -18,6 +24,7 @@ namespace TaskWorkspace.Services
         private readonly DTE _dte;
         private readonly SolutionEventsService _eventsService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IVsUIShellDocumentWindowMgr _documentWindowMgr;
         private bool _isSolutionOpened;
 
 
@@ -26,11 +33,12 @@ namespace TaskWorkspace.Services
         private readonly IVsSolution _solution;
         private IEnumerable<string> _workspaces;
 
-        public WorkspaceService(IServiceProvider serviceProvider, IVsSolution solution, DTE dte)
+        public WorkspaceService(IServiceProvider serviceProvider, IVsSolution solution, DTE dte,IVsUIShellDocumentWindowMgr documentWindowMgr)
         {
             _solution = solution;
             _dte = dte;
             _serviceProvider = serviceProvider;
+            _documentWindowMgr = documentWindowMgr;
 
             _eventsService = new SolutionEventsService(_solution);
             _repository = new WorkspaceRepository(_solution);
@@ -84,25 +92,26 @@ namespace TaskWorkspace.Services
             _workspaces = _repository.GetWorkspaces();
         }
 
-        private (List<WorkspaceDocument>, List<WorkspaceBreakpoint>) GetWorkspaceItem()
+        private (List<WorkspaceBreakpoint>,string) GetWorkspaceItem()
         {
-            var documents = new List<WorkspaceDocument>();
-            foreach (Document dteDocument in _dte.Documents)
-            {
-                documents.Add(new WorkspaceDocument() {Filename = dteDocument.FullName});
-            }
-
             var breakpoints = new List<WorkspaceBreakpoint>();
             foreach (Breakpoint breakpoint in _dte.Debugger.Breakpoints)
             {
                 breakpoints.Add(new WorkspaceBreakpoint()
                 {
                     Filename = breakpoint.File,
-                    Line = breakpoint.FileLine
+                    Line = breakpoint.FileLine,
+                    Enabled = breakpoint.Enabled
                 });
             }
 
-            return (documents, breakpoints);
+            IStream stream;
+            NativeHelpers.CreateStreamOnHGlobal(IntPtr.Zero, true,out stream);
+            ErrorHandler.ThrowOnFailure(_documentWindowMgr.SaveDocumentWindowPositions(0U,stream));
+            stream.Rewind();
+            var windowsBase64 = System.Convert.ToBase64String(stream.ToByteArray());
+
+            return (breakpoints,windowsBase64);
         }
 
         public void LoadWorkspace()
@@ -115,8 +124,26 @@ namespace TaskWorkspace.Services
             ClearWorkspace();
 
             var workspace = _repository.GetWorkspace(SelectedWorkspace);
-            OpenDocuments(workspace.Documents);
             AddBreakpoints(workspace.Breakpoints);
+            RestoreWindows(workspace.WindowsBase64);
+        }
+
+        private void RestoreWindows(string workspaceWindowsBase64)
+        {
+            var byteWindows = GetWindowsArray(workspaceWindowsBase64);
+
+            IStream stream;
+            NativeHelpers.CreateStreamOnHGlobal(IntPtr.Zero, true, out stream);
+            uint pcbWritten;
+            stream.Write(byteWindows,(uint)byteWindows.Length,out pcbWritten);
+            stream.Rewind();
+            ErrorHandler.ThrowOnFailure(_documentWindowMgr.ReopenDocumentWindows(stream));
+        }
+
+        private byte[] GetWindowsArray(string base64)
+        {
+            var bytes = System.Convert.FromBase64String(base64);
+            return bytes;
         }
 
         public void DeleteWorkspace()
@@ -145,14 +172,17 @@ namespace TaskWorkspace.Services
             SelectedWorkspace = null;
         }
 
-        private void OpenDocuments(List<WorkspaceDocument> documents)
-        {
-            documents.ForEach(d => _dte.Documents.Open(d.Filename));
-        }
-
         private void AddBreakpoints(List<WorkspaceBreakpoint> breakpoints)
         {
             breakpoints.ForEach(b => _dte.Debugger.Breakpoints.Add(File: b.Filename, Line: b.Line));
+            foreach (Breakpoint breakpoint in _dte.Debugger.Breakpoints)
+            {
+                var wsBreak = breakpoints.FirstOrDefault(b => b.Filename == breakpoint.File && b.Line == breakpoint.FileLine);
+                if(wsBreak != null)
+                {
+                    breakpoint.Enabled = wsBreak.Enabled;
+                }
+            }
         }
 
 

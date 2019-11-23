@@ -13,15 +13,18 @@ namespace TaskWorkspace.Model
 
         public int Line { get; set; }
 
+        public bool Enabled { get; set; }
+
         public static Breakpoint CreateBreakpoint(Break breakpoint)
         {
             return new Breakpoint
             {
                 Filename = breakpoint.File,
-                Line = breakpoint.FileLine
+                Line = breakpoint.FileLine,
+                Enabled = breakpoint.Enabled
             };
         }
 
-        public override string ToString() => $"{Filename} : {Line}";
+        public override string ToString() => $"{Filename} : {Line} : {Enabled}";
     }
 }
