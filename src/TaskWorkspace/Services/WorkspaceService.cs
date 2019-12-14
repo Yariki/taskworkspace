@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Documents;
 using EnvDTE;
@@ -13,6 +14,9 @@ using TaskWorkspace.DataAccess;
 using TaskWorkspace.EventArguments;
 using TaskWorkspace.Helpers;
 using TaskWorkspace.Infrastructure;
+using TaskWorkspace.Model;
+using Breakpoint = EnvDTE.Breakpoint;
+using Document = EnvDTE.Document;
 using IServiceProvider = System.IServiceProvider;
 using WorkspaceDocument = TaskWorkspace.Model.Document;
 using WorkspaceBreakpoint = TaskWorkspace.Model.Breakpoint;
@@ -156,6 +160,7 @@ namespace TaskWorkspace.Services
             ClearWorkspace();
             _repository.DeleteWorkspace(SelectedWorkspace);
             SelectedWorkspace = null;
+			_workspaces = _repository.GetWorkspaces();
         }
 
         private void SolutionOpened(object sender, OpenedSolutionArgs e)
@@ -174,7 +179,34 @@ namespace TaskWorkspace.Services
 
         private void AddBreakpoints(List<WorkspaceBreakpoint> breakpoints)
         {
-            breakpoints.ForEach(b => _dte.Debugger.Breakpoints.Add(File: b.Filename, Line: b.Line));
+            using(var breakpointHelper = new BreakpointHelper())
+            {
+	            breakpoints.ForEach(b =>
+	            {
+		            try
+		            {
+						if(breakpointHelper.CanBreakpointBeSet(b.Filename,b.Line))
+						{
+							_dte.Debugger.Breakpoints.Add(File: b.Filename, Line: b.Line);
+						}
+						else
+						{
+							WorkspaceLogger.Log.Info($"Breakpoint skipped: {b.Filename}; {b.Line}");							
+						}
+
+		            }
+		            catch (COMException e)
+		            {
+						WorkspaceLogger.Log.Info($"Filename: {b.Filename}; Line: {b.Line}");
+						WorkspaceLogger.Log.Error(e);
+		            }
+                    catch(Exception e)
+                    {
+						WorkspaceLogger.Log.Error(e);
+                    }
+	            });
+
+            }
             foreach (Breakpoint breakpoint in _dte.Debugger.Breakpoints)
             {
                 var wsBreak = breakpoints.FirstOrDefault(b => b.Filename == breakpoint.File && b.Line == breakpoint.FileLine);
@@ -194,22 +226,36 @@ namespace TaskWorkspace.Services
 
         private void CloseDocuments()
         {
-            var list = new List<Document>();
-            foreach (Document dteDocument in _dte.Documents)
-            {
-                list.Add(dteDocument);
-            }
-            list.ForEach(d => d.Close());
+	        try
+	        {
+				var list = new List<Document>();
+	            foreach (Document dteDocument in _dte.Documents)
+	            {
+	                list.Add(dteDocument);
+	            }
+	            list.ForEach(d => d.Close());
+	        }
+	        catch (Exception e)
+	        {
+				WorkspaceLogger.Log.Error(e);		        
+	        }
         }
 
         private void ClearBreakpoint()
         {
-            var list = new List<Breakpoint>();
-            foreach (Breakpoint debuggerBreakpoint in _dte.Debugger.Breakpoints)
-            {
-                list.Add(debuggerBreakpoint);
-            }
-            list.ForEach(b => b.Delete());
+	        try
+	        {
+	            var list = new List<Breakpoint>();
+	            foreach (Breakpoint debuggerBreakpoint in _dte.Debugger.Breakpoints)
+	            {
+	                list.Add(debuggerBreakpoint);
+	            }
+	            list.ForEach(b => b.Delete());
+	        }
+	        catch (Exception e)
+	        {
+		        WorkspaceLogger.Log.Error(e);
+	        }
         }
 
     }

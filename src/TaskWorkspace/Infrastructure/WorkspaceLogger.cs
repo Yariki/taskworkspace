@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Microsoft.VisualStudio.Debugger.Clr.Cpp;
 using NLog;
 using NLog.Config;
@@ -43,8 +44,34 @@ namespace TaskWorkspace.Infrastructure
             Logger?.Error(message);
         }
 
+		public void Error(Exception e)
+		{
+			var mes = new StringBuilder();
+			ApplyMessage(e,mes);
+			var inner = e.InnerException;
+			while(inner != null)
+			{
+				ApplyMessage(inner,mes);
+				inner = inner.InnerException;
+			}
+			if(e is AggregateException aggregate)
+			{
+				foreach (var aggregateInnerException in aggregate.InnerExceptions)
+				{
+					ApplyMessage(aggregateInnerException,mes);
+				}
+			}
+			Logger?.Error(mes);
+		}
 
-        public void Info(string message)
+		private void ApplyMessage(Exception inner, StringBuilder mes)
+		{
+			mes.AppendLine($"Type: {inner.GetType().FullName}");
+			mes.AppendLine($"\tMessage: {inner.Message}");
+		}
+
+
+		public void Info(string message)
         {
             Logger?.Info(message);
         }
