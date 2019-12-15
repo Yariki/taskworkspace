@@ -49,6 +49,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Backup\BackupHelpers\DropboxHelper.cs" />
+    <Compile Include="Backup\BackupWorkspace.cs" />
+    <Compile Include="Backup\Interfaces\IBackupHelper.cs" />
+    <Compile Include="Backup\StorageType.cs" />
     <Compile Include="DataAccess\WorkspaceRepository.cs" />
     <Compile Include="EventArguments\OpenedSolutionArgs.cs" />
     <Compile Include="Helpers\BreakpointHelper.cs" />
@@ -58,6 +62,7 @@
     <Compile Include="Infrastructure\WorkspaceLogger.cs" />
     <Compile Include="Model\Breakpoint.cs" />
     <Compile Include="Model\Document.cs" />
+    <Compile Include="Model\Token.cs" />
     <Compile Include="Model\Workspace.cs" />
     <Compile Include="PkgCmdId.cs" />
     <Compile Include="PkgGuids.cs" />

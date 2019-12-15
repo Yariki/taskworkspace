@@ -115,7 +115,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
                 <CommandFlag>IconAndText</CommandFlag>
                 <CommandFlag>CommandWellOnly</CommandFlag>
                 <Strings>
-                    <ButtonText>Select Workspace</ButtonText>
+                    <ButtonText>Workspace</ButtonText>
                 </Strings>
 
             </Combo>
@@ -133,7 +133,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
             <Button guid="guidTaskWorkspaceCmdSet" id="cmdidLoad" priority="0x0200" type="Button">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
-                <Icon guid="loadImage" id="load"/>
+                <Icon guid="loadImage" id="load"/>  
                 <Strings>
                     <ButtonText>Load Workspace</ButtonText>
                 </Strings>
