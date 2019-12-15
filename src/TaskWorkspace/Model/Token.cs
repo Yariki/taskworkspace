@@ -1,5 +1,8 @@
-﻿namespace TaskWorkspace.Model
+﻿using System.Runtime.Serialization;
+
+namespace TaskWorkspace.Model
 {
+	[DataContract]
 	public class Token
 	{
 
@@ -7,6 +10,7 @@
 		{	
 		}
 
+		[DataMember]
 		public string AccessToken { get; set; }
 	}
 }
