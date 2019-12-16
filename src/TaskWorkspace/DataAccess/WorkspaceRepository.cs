@@ -25,7 +25,9 @@ namespace TaskWorkspace.DataAccess
 
         }
 
-        private string SolutionFolder => GetSolutionInfo(SolutionInfo.Folder);
+        internal string SolutionFolder => GetSolutionInfo(SolutionInfo.Folder);
+
+        internal string Filename => $"{SolutionName}.db";
 
         private string SolutionName
         {
@@ -36,14 +38,14 @@ namespace TaskWorkspace.DataAccess
             }
         } 
 
-        private LiteDatabase GetDatabase(string folder)
+        private LiteDatabase GetDatabase()
         {
-            return new LiteDatabase(Path.Combine(folder, $"{SolutionName}.db"));
+            return new LiteDatabase(Path.Combine(SolutionFolder, Filename));
         }
 
         public IEnumerable<string> GetWorkspaces()
         {
-            using (var db = GetDatabase(SolutionFolder))
+            using (var db = GetDatabase())
             {
                 var workspaces = db.GetCollection<Workspace>();
                 return workspaces.Find(o => true).Select(w => w.Name).ToList();
@@ -54,7 +56,7 @@ namespace TaskWorkspace.DataAccess
         {
             if (string.IsNullOrEmpty(name)) return false;
 
-            using (var db = GetDatabase(SolutionFolder))
+            using (var db = GetDatabase())
             {
                 return db.GetCollection<Workspace>().Find(w => w.Name == name).Any();
             }
@@ -62,7 +64,7 @@ namespace TaskWorkspace.DataAccess
 
         public Workspace GetWorkspace(string name)
         {
-            using (var db = GetDatabase(SolutionFolder))
+            using (var db = GetDatabase())
             {
                 var workspace = db.GetCollection<Workspace>()
                     .Include(x => x.Breakpoints)
@@ -76,7 +78,7 @@ namespace TaskWorkspace.DataAccess
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
-            using (var db = GetDatabase(SolutionFolder))
+            using (var db = GetDatabase())
             {
                 var workspace = new Workspace
                 {
@@ -98,7 +100,7 @@ namespace TaskWorkspace.DataAccess
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
-            using (var db = GetDatabase(SolutionFolder))
+            using (var db = GetDatabase())
             {
                 var workspace = GetWorkspace(name);
                 workspace.Breakpoints = breakpoints;
@@ -117,7 +119,7 @@ namespace TaskWorkspace.DataAccess
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
 
-            using (var db = GetDatabase(SolutionFolder))
+            using (var db = GetDatabase())
             {
                 var workspaces = db.GetCollection<Workspace>();
                 workspaces.Delete(x => x.Name == name);

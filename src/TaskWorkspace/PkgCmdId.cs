@@ -7,5 +7,8 @@
         internal const int cmdidDelete = 0x2003;
         internal const int cmdidWorkspacesGetList = 0x2004;
         internal const int cmdidWorkspaces = 0x2005;
+
+        internal const int cmdDropboxBackup = 0x1310;
+        internal const int cmdDropboxRestore = 0x1320;
     }
 }

@@ -86,6 +86,15 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
                     <ButtonText>Task Workspace</ButtonText>
                 </Strings>
             </Menu>
+
+          <Menu guid="guidTaskWorkspaceCmdSet" id="DropboxController" priority="0x0400" type="MenuController">
+            <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" />
+            <Strings>
+              <ButtonText>Dropbox Backup/Restore</ButtonText>
+              <CommandName>Dropbox Backup/Restore</CommandName>
+            </Strings>
+          </Menu>
+
         </Menus>
 
         <!--
@@ -99,9 +108,13 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
       Here we create a menu group for the toolbar defined above in the Menus section. We always
       need a menu group because this is the only possible container for commands.
       -->
-            <Group guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" priority="0xFF45">
+            <Group guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" priority="0xFF50">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbar"/>
             </Group>
+
+          <Group guid="guidTaskWorkspaceCmdSet" id="DropboxControllerGroup" priority="0xFF40">
+              <Parent guid="guidTaskWorkspaceCmdSet" id="DropboxController"/>
+          </Group>
 
         </Groups>
 
@@ -147,6 +160,23 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
                 </Strings>
             </Button>
 
+          <Button guid="guidTaskWorkspaceCmdSet" id="DropboxBackup" priority="0x0000" type="Button">
+              <Parent guid="guidTaskWorkspaceCmdSet" id="DropboxControllerGroup" />
+              <CommandFlag>IconAndText</CommandFlag>
+              <Strings>
+                <ButtonText>Dropbox Backup</ButtonText>
+                <CommandName>Dropbox Backup</CommandName>
+              </Strings>
+          </Button>
+
+          <Button guid="guidTaskWorkspaceCmdSet" id="DropboxRestore" priority="0x0100" type="Button">
+            <Parent guid="guidTaskWorkspaceCmdSet" id="DropboxControllerGroup" />
+            <CommandFlag>IconAndText</CommandFlag>
+            <Strings>
+              <ButtonText>Dropbox Restore</ButtonText>
+              <CommandName>Dropbox Restore</CommandName>
+            </Strings>
+          </Button>
 
 
         </Buttons>
@@ -210,6 +240,14 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
             <IDSymbol name="cmdidDelete" value="0x2003" />
             <IDSymbol name="cmdidWorkspacesGetList" value="0x2004" />
             <IDSymbol name="cmdidWorkspaces" value="0x2005"/>
+
+            <!--Dropbox-->
+            <IDSymbol name="DropboxController" value="0x1300"></IDSymbol>
+            <IDSymbol name="DropboxControllerGroup" value="0x1301"></IDSymbol>
+            <IDSymbol name="DropboxBackup" value="0x1310"></IDSymbol>
+            <IDSymbol name="DropboxRestore" value="0x1320"></IDSymbol>
+
+
         </GuidSymbol>
 
         <GuidSymbol name="saveImage" value="{831D828D-5DFF-47F5-851A-8439EDEA5691}">

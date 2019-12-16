@@ -49,6 +49,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Backup\BackupHelpersFactory.cs" />
     <Compile Include="Backup\BackupHelpers\DropboxHelper.cs" />
     <Compile Include="Backup\BackupWorkspace.cs" />
     <Compile Include="Backup\Interfaces\IBackupHelper.cs" />

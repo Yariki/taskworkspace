@@ -9,6 +9,7 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using TaskWorkspace.Backup;
 using TaskWorkspace.Services;
 
 namespace TaskWorkspace.Infrastructure
@@ -26,6 +27,8 @@ namespace TaskWorkspace.Infrastructure
             _handlers.Add(PkgCmdId.cmdidSave, SaveCommandCallback);
             _handlers.Add(PkgCmdId.cmdidLoad, LoadCommandCallback);
             _handlers.Add(PkgCmdId.cmdidDelete, DeleteCommandCallback);
+            _handlers.Add(PkgCmdId.cmdDropboxBackup, DropboxBackupCallback);
+            _handlers.Add(PkgCmdId.cmdDropboxRestore,DropboxRestoreCallback);
 
             if (ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService service)
             {
@@ -110,6 +113,16 @@ namespace TaskWorkspace.Infrastructure
             {
                 WorkspaceLogger.Log.Error("Output param is required");
             }
+        }
+
+        private void DropboxBackupCallback ( object sender,EventArgs args )
+        {
+            _workspaceService?.BackupWorkspace(StorageType.Dropbox);
+        }
+
+        private void DropboxRestoreCallback ( object sender,EventArgs args )
+        {
+            _workspaceService?.RestoreWorkspace(StorageType.Dropbox);
         }
 
 

@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using NLog.LayoutRenderers.Wrappers;
+using TaskWorkspace.Backup;
 using TaskWorkspace.DataAccess;
 using TaskWorkspace.EventArguments;
 using TaskWorkspace.Helpers;
@@ -161,6 +162,20 @@ namespace TaskWorkspace.Services
             _repository.DeleteWorkspace(SelectedWorkspace);
             SelectedWorkspace = null;
 			_workspaces = _repository.GetWorkspaces();
+        }
+
+        public async System.Threading.Tasks.Task RestoreWorkspace(StorageType storageType)
+        {
+	        var fullFileName = $"{_repository.SolutionFolder}\\{_repository.Filename}";
+            var backupWorkspace = new BackupWorkspace(storageType,fullFileName,_repository.Filename);
+            await backupWorkspace.Restore();
+        }
+
+        public async System.Threading.Tasks.Task BackupWorkspace (StorageType storageType)
+        {
+            var fullFileName = $"{_repository.SolutionFolder}\\{_repository.Filename}";
+            var backupWorkspace = new BackupWorkspace(storageType,fullFileName,_repository.Filename);
+            await backupWorkspace.Backup();
         }
 
         private void SolutionOpened(object sender, OpenedSolutionArgs e)
