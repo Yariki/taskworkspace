@@ -18,6 +18,7 @@ using TaskWorkspace.Infrastructure;
 using TaskWorkspace.Model;
 using Breakpoint = EnvDTE.Breakpoint;
 using Document = EnvDTE.Document;
+using FILETIME = Microsoft.VisualStudio.OLE.Interop.FILETIME;
 using IServiceProvider = System.IServiceProvider;
 using WorkspaceDocument = TaskWorkspace.Model.Document;
 using WorkspaceBreakpoint = TaskWorkspace.Model.Breakpoint;
@@ -168,7 +169,16 @@ namespace TaskWorkspace.Services
         {
 	        var fullFileName = $"{_repository.SolutionFolder}\\{_repository.Filename}";
             var backupWorkspace = new BackupWorkspace(storageType,fullFileName,_repository.Filename);
+            RemoveExistingWorkspaceFile(fullFileName);
             await backupWorkspace.Restore();
+        }
+
+        private static void RemoveExistingWorkspaceFile(string fullFileName)
+        {
+	        if (System.IO.File.Exists(fullFileName))
+	        {
+		        System.IO.File.Delete(fullFileName);
+	        }
         }
 
         public async System.Threading.Tasks.Task BackupWorkspace (StorageType storageType)

@@ -2,9 +2,11 @@
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using Dropbox.Api;
+using Dropbox.Api.Files;
 using TaskWorkspace.Backup.Interfaces;
 using TaskWorkspace.Infrastructure;
 using TaskWorkspace.Model;
@@ -23,9 +25,13 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
         private readonly Uri JSRedirectUri = new Uri(LoopbackHost + "token");
 
+        private static readonly IsolatedStorageScope Scope = IsolatedStorageScope.User
+                                                             | IsolatedStorageScope.Assembly
+                                                             | IsolatedStorageScope.Domain;
 
 
-		private readonly string _fullFileName;
+
+        private readonly string _fullFileName;
 		private readonly string _filename;
 
 		public DropboxHelper(string fullFileName, string filename)
@@ -40,8 +46,20 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			var accessToken = await GetToken();
             using(var client = new DropboxClient(accessToken))
             {
-	            var data = await client.Files.UploadAsync(_fullFileName);
-	            return data.Size != 0;
+	            try
+	            {
+		            using (var mem = new MemoryStream(File.ReadAllBytes(_fullFileName)))
+		            {
+                        var updated = await client.Files.UploadAsync($"/{_filename}",WriteMode.Overwrite.Instance,body:mem);
+                        return updated.Size != 0;
+                    }
+                }
+	            catch (Exception e)
+	            {
+		            WorkspaceLogger.Log.Error(e);
+	            }
+
+	            return false;
             }
 		}
 
@@ -53,15 +71,23 @@ namespace TaskWorkspace.Backup.BackupHelpers
             {
                 using(var client = new DropboxClient(accessToken))
                 {
-                    var response = await client.Files.DownloadAsync(_filename);
-                    if(response != null && response.Response.Size > 0)
-                    {
-                        using(var fileStream = File.Create(_fullFileName))
+	                try
+	                {
+                        var response = await client.Files.DownloadAsync($"/{_filename}");
+                        if(response != null && response.Response.Size > 0)
                         {
-                            (await response.GetContentAsStreamAsync()).CopyTo(fileStream);
-                            return true;
+                            using(var fileStream = File.Create(_fullFileName))
+                            {
+                                (await response.GetContentAsStreamAsync()).CopyTo(fileStream);
+                                return true;
+                            }
                         }
                     }
+	                catch (Exception e)
+	                {
+		                WorkspaceLogger.Log.Error(e);
+		                return false;
+	                }
                 }
 
             }
@@ -75,7 +101,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
 		private async Task<string> GetToken()
 		{
-			var token = GetTokenFromFile() ?? await GetTokenOnline();
+			var token = GetTokenFromFile() ?? (await GetTokenOnline());
 			return token;
 		}
 
@@ -100,7 +126,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
                 if (result.State != state)
                 {
-                    return string.Empty;
+                    return null;
                 }
                 accessToken = result.AccessToken;
                 SaveToken(accessToken);
@@ -108,7 +134,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
             catch (Exception e)
             {
                 WorkspaceLogger.Log.Error(e);
-                return string.Empty;
+                return null;
             }
 
             return accessToken;
@@ -117,16 +143,16 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
 		private string GetTokenFromFile()
 		{
-			using (var isolatedStorageFile = IsolatedStorageFile.GetStore(IsolatedStorageScope.User,null,null))
+			using (var isolatedStorageFile = IsolatedStorageFile.GetStore(Scope,null,null))
 			{
 				if(!isolatedStorageFile.FileExists(DropboxFile)) 
 				{
-					return string.Empty;
+					return null;
 				}
 				var stream = isolatedStorageFile.OpenFile(DropboxFile,FileMode.Open,FileAccess.Read,FileShare.Read);
 				var dataContractSerializer =  new DataContractJsonSerializer(typeof(Token));
 				var token = dataContractSerializer.ReadObject(stream) as Token;
-				return token != null ? token.AccessToken : string.Empty;
+				return token != null ? token.AccessToken : null;
 			}
 		}
 
@@ -167,7 +193,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
         private void SaveToken ( string token)
         {
-            using(var isolatedStorageFile = IsolatedStorageFile.GetStore(IsolatedStorageScope.User,null,null))
+            using(var isolatedStorageFile = IsolatedStorageFile.GetStore(Scope,null,null))
             {
                 if(isolatedStorageFile.FileExists(DropboxFile))
                 {
