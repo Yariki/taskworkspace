@@ -125,6 +125,7 @@
   <ItemGroup>
     <Content Include="index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Microsoft.CodeAnalysis.CSharp.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
