@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using NLog.LayoutRenderers.Wrappers;
+using TaskWorkspace.Backup;
 using TaskWorkspace.DataAccess;
 using TaskWorkspace.EventArguments;
 using TaskWorkspace.Helpers;
@@ -17,6 +18,7 @@ using TaskWorkspace.Infrastructure;
 using TaskWorkspace.Model;
 using Breakpoint = EnvDTE.Breakpoint;
 using Document = EnvDTE.Document;
+using FILETIME = Microsoft.VisualStudio.OLE.Interop.FILETIME;
 using IServiceProvider = System.IServiceProvider;
 using WorkspaceDocument = TaskWorkspace.Model.Document;
 using WorkspaceBreakpoint = TaskWorkspace.Model.Breakpoint;
@@ -161,6 +163,45 @@ namespace TaskWorkspace.Services
             _repository.DeleteWorkspace(SelectedWorkspace);
             SelectedWorkspace = null;
 			_workspaces = _repository.GetWorkspaces();
+        }
+
+        public async System.Threading.Tasks.Task RestoreWorkspace(StorageType storageType)
+        {
+	        var fullFileName = $"{_repository.SolutionFolder}\\{_repository.Filename}";
+            var backupWorkspace = new BackupWorkspace(storageType,fullFileName,_repository.Filename);
+            RemoveExistingWorkspaceFile(fullFileName);
+            if(await backupWorkspace.Restore())
+            {
+                VsShellUtilities.ShowMessageBox(_serviceProvider,
+                   $"The workspace backup was restored.",
+                   "Workspace Manager",
+                   OLEMSGICON.OLEMSGICON_INFO,
+                   OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                   OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
+        }
+
+        private static void RemoveExistingWorkspaceFile(string fullFileName)
+        {
+	        if (System.IO.File.Exists(fullFileName))
+	        {
+		        System.IO.File.Delete(fullFileName);
+	        }
+        }
+
+        public async System.Threading.Tasks.Task BackupWorkspace (StorageType storageType)
+        {
+            var fullFileName = $"{_repository.SolutionFolder}\\{_repository.Filename}";
+            var backupWorkspace = new BackupWorkspace(storageType,fullFileName,_repository.Filename);
+            if(await backupWorkspace.Backup())
+            {
+	            VsShellUtilities.ShowMessageBox(_serviceProvider,
+		            $"The workspace backup was uploaded.",
+		            "Workspace Manager",
+		            OLEMSGICON.OLEMSGICON_INFO,
+		            OLEMSGBUTTON.OLEMSGBUTTON_OK,
+		            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
         }
 
         private void SolutionOpened(object sender, OpenedSolutionArgs e)

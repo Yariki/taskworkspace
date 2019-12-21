@@ -49,6 +49,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Backup\BackupHelpersFactory.cs" />
+    <Compile Include="Backup\BackupHelpers\DropboxHelper.cs" />
+    <Compile Include="Backup\BackupWorkspace.cs" />
+    <Compile Include="Backup\Interfaces\IBackupHelper.cs" />
+    <Compile Include="Backup\StorageType.cs" />
     <Compile Include="DataAccess\WorkspaceRepository.cs" />
     <Compile Include="EventArguments\OpenedSolutionArgs.cs" />
     <Compile Include="Helpers\BreakpointHelper.cs" />
@@ -58,6 +63,7 @@
     <Compile Include="Infrastructure\WorkspaceLogger.cs" />
     <Compile Include="Model\Breakpoint.cs" />
     <Compile Include="Model\Document.cs" />
+    <Compile Include="Model\Token.cs" />
     <Compile Include="Model\Workspace.cs" />
     <Compile Include="PkgCmdId.cs" />
     <Compile Include="PkgGuids.cs" />
@@ -89,6 +95,9 @@
     <Reference Include="Microsoft.VisualStudio.Services.Integration, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dropbox.Api">
+      <Version>4.9.4</Version>
+    </PackageReference>
     <PackageReference Include="LiteDB">
       <Version>4.1.4</Version>
     </PackageReference>
@@ -114,6 +123,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Microsoft.CodeAnalysis.CSharp.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
