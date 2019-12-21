@@ -222,11 +222,11 @@ namespace TaskWorkspace.Services
         {
             using(var breakpointHelper = new BreakpointHelper())
             {
-	            breakpoints.ForEach(b =>
+	            breakpoints.ForEach(async b =>
 	            {
 		            try
 		            {
-						if(breakpointHelper.CanBreakpointBeSet(b.Filename,b.Line))
+						if(await breakpointHelper.CanBreakpointBeSet(b.Filename,b.Line))
 						{
 							_dte.Debugger.Breakpoints.Add(File: b.Filename, Line: b.Line);
 						}
