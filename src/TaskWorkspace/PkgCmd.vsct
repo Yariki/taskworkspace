@@ -90,8 +90,8 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
           <Menu guid="guidTaskWorkspaceCmdSet" id="DropboxController" priority="0x0400" type="MenuController">
             <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" />
             <Strings>
-              <ButtonText>Dropbox Backup/Restore</ButtonText>
-              <CommandName>Dropbox Backup/Restore</CommandName>
+              <ButtonText>Dropbox</ButtonText>
+              <CommandName>Dropbox</CommandName>
             </Strings>
           </Menu>
 
@@ -164,8 +164,8 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
               <Parent guid="guidTaskWorkspaceCmdSet" id="DropboxControllerGroup" />
               <CommandFlag>IconAndText</CommandFlag>
               <Strings>
-                <ButtonText>Dropbox Backup</ButtonText>
-                <CommandName>Dropbox Backup</CommandName>
+                <ButtonText>Backup</ButtonText>
+                <CommandName>Backup</CommandName>
               </Strings>
           </Button>
 
@@ -173,8 +173,8 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
             <Parent guid="guidTaskWorkspaceCmdSet" id="DropboxControllerGroup" />
             <CommandFlag>IconAndText</CommandFlag>
             <Strings>
-              <ButtonText>Dropbox Restore</ButtonText>
-              <CommandName>Dropbox Restore</CommandName>
+              <ButtonText>Restore</ButtonText>
+              <CommandName>Restore</CommandName>
             </Strings>
           </Button>
 

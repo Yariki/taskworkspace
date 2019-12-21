@@ -170,7 +170,15 @@ namespace TaskWorkspace.Services
 	        var fullFileName = $"{_repository.SolutionFolder}\\{_repository.Filename}";
             var backupWorkspace = new BackupWorkspace(storageType,fullFileName,_repository.Filename);
             RemoveExistingWorkspaceFile(fullFileName);
-            await backupWorkspace.Restore();
+            if(await backupWorkspace.Restore())
+            {
+                VsShellUtilities.ShowMessageBox(_serviceProvider,
+                   $"The workspace backup was restored.",
+                   "Workspace Manager",
+                   OLEMSGICON.OLEMSGICON_INFO,
+                   OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                   OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
         }
 
         private static void RemoveExistingWorkspaceFile(string fullFileName)
@@ -185,7 +193,15 @@ namespace TaskWorkspace.Services
         {
             var fullFileName = $"{_repository.SolutionFolder}\\{_repository.Filename}";
             var backupWorkspace = new BackupWorkspace(storageType,fullFileName,_repository.Filename);
-            await backupWorkspace.Backup();
+            if(await backupWorkspace.Backup())
+            {
+	            VsShellUtilities.ShowMessageBox(_serviceProvider,
+		            $"The workspace backup was uploaded.",
+		            "Workspace Manager",
+		            OLEMSGICON.OLEMSGICON_INFO,
+		            OLEMSGBUTTON.OLEMSGBUTTON_OK,
+		            OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
         }
 
         private void SolutionOpened(object sender, OpenedSolutionArgs e)

@@ -18,17 +18,17 @@ namespace TaskWorkspace.Backup
 			this._filename = filename;
 		}
 
-		public async Task Backup()
+		public async Task<bool> Backup()
 		{
 			var helper = BackupHelpersFactory.Instance.GetBackupHelper(_storageType, _fullFileName, _filename);
-			await helper.UploadBackup();
+			return await helper.UploadBackup();
 		}
 
 
-		public async Task Restore()
+		public async Task<bool> Restore()
 		{
 			var helper = BackupHelpersFactory.Instance.GetBackupHelper(_storageType,_fullFileName,_filename);
-			await  helper.DownloadBackup();
+			return await  helper.DownloadBackup();
 		}
 
 	}

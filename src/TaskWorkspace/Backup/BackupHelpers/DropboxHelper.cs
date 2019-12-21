@@ -166,8 +166,9 @@ namespace TaskWorkspace.Backup.BackupHelpers
             }
 
             context.Response.ContentType = "text/html";
+            var indexFile = Path.Combine(Path.GetDirectoryName(typeof(DropboxHelper).Assembly.Location),"index.html");
 
-            using (var file = File.OpenRead("index.html"))
+            using (var file = File.OpenRead(indexFile))
             {
                 file.CopyTo(context.Response.OutputStream);
             }
