@@ -329,3 +329,4 @@ ASALocalRun/
 .mfractor/
 *.db
 src/TaskWorkspace/*.dll
+/src/TaskWorkspace/google.json

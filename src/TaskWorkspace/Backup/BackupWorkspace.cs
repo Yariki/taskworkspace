@@ -21,14 +21,14 @@ namespace TaskWorkspace.Backup
 		public async Task<bool> Backup()
 		{
 			var helper = BackupHelpersFactory.Instance.GetBackupHelper(_storageType, _fullFileName, _filename);
-			return await helper.UploadBackup();
+			return await helper?.UploadBackup();
 		}
 
 
 		public async Task<bool> Restore()
 		{
 			var helper = BackupHelpersFactory.Instance.GetBackupHelper(_storageType,_fullFileName,_filename);
-			return await  helper.DownloadBackup();
+			return await  helper?.DownloadBackup();
 		}
 
 	}

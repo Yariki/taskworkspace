@@ -29,6 +29,9 @@ namespace TaskWorkspace.Infrastructure
             _handlers.Add(PkgCmdId.cmdidDelete, DeleteCommandCallback);
             _handlers.Add(PkgCmdId.cmdDropboxBackup, DropboxBackupCallback);
             _handlers.Add(PkgCmdId.cmdDropboxRestore,DropboxRestoreCallback);
+            _handlers.Add(PkgCmdId.cmdGoogleBackup, GoogleBackupCallback);
+            _handlers.Add(PkgCmdId.cmdGoogleRestore,GoogleRestoreCallback);
+
 
             if (ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService service)
             {
@@ -124,6 +127,17 @@ namespace TaskWorkspace.Infrastructure
         {
             _workspaceService?.RestoreWorkspace(StorageType.Dropbox);
         }
+
+        private void GoogleBackupCallback ( object sender,EventArgs args )
+        {
+            _workspaceService?.BackupWorkspace(StorageType.Google);
+        }
+
+        private void GoogleRestoreCallback ( object sender,EventArgs args )
+        {
+            _workspaceService?.RestoreWorkspace(StorageType.Google);
+        }
+
 
 
         private void OutputCommandString(string text)
