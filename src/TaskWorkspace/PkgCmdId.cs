@@ -10,5 +10,8 @@
 
         internal const int cmdDropboxBackup = 0x1310;
         internal const int cmdDropboxRestore = 0x1320;
+
+        internal const int cmdGoogleBackup = 0x1410;
+        internal const int cmdGoogleRestore = 0x1420;
     }
 }

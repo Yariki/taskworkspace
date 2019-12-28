@@ -45,11 +45,11 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			try
 			{
 				var service = GetDriveService();
-				var parentFolderId = GetDefaultFolderId() ?? CreateAndGetDefaultFolderId(service);
+				var parentFolderId = GetDefaultFolderId() ?? CreateOrGetDefaultFolderId(service);
 
 				//remove
-				var removeLIst = retrieveAllFiles(service,$"name = '{_filename}'");
-				foreach(var fileRemove in removeLIst)
+				var removeList = RetrieveAllFiles(service,$"name = '{_filename}'");
+				foreach(var fileRemove in removeList)
 				{
 					await service.Files.Delete(fileRemove.Id).ExecuteAsync();
 				}
@@ -85,7 +85,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			try
 			{
 				var service = GetDriveService();
-				var fileList = retrieveAllFiles(service,$"name = '{_filename}'");
+				var fileList = RetrieveAllFiles(service,$"name = '{_filename}'");
 				if(!fileList.Any())
 				{
 					WorkspaceLogger.Log.Warn($"The '{_filename}' backup was not found.");
@@ -126,7 +126,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
 
 
-		private OAuthInfo GetAuthInfo ()
+		private Info GetAuthInfo ()
 		{
 			var oathfile = Path.Combine(Path.GetDirectoryName(typeof(DropboxHelper).Assembly.Location), GoogleOAuthInfo);
 			if(!System.IO.File.Exists(oathfile))
@@ -134,8 +134,8 @@ namespace TaskWorkspace.Backup.BackupHelpers
 				return null;
 			}
 			var stream = System.IO.File.Open(oathfile, FileMode.Open, FileAccess.Read, FileShare.Read);
-			var dataContractSerializer = new DataContractJsonSerializer(typeof(OAuthInfo));
-			var info = dataContractSerializer.ReadObject(stream) as OAuthInfo;
+			var dataContractSerializer = new DataContractJsonSerializer(typeof(Info));
+			var info = dataContractSerializer.ReadObject(stream) as Info;
 			return info;
 		}
 
@@ -154,8 +154,8 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			GoogleWebAuthorizationBroker.Folder = DefaultFolder;
 			var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(new ClientSecrets
 				{
-					ClientId = oauthInfo.ClientId,
-					ClientSecret = oauthInfo.ClientSecret
+					ClientId = oauthInfo.Installed.ClientId,
+					ClientSecret = oauthInfo.Installed.ClientSecret
 				},
 				scopes,
 				"Admin",
@@ -203,10 +203,10 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			}
 		}
 
-		private string CreateAndGetDefaultFolderId (DriveService service)
+		private string CreateOrGetDefaultFolderId (DriveService service)
 		{
-			var filelist = retrieveAllFiles(service,"mimeType = 'application/vnd.google-apps.folder' and name = 'TaskWorkspace'");
-			string folderId = filelist.Any() ? filelist.First().Id : CreateAndGetDefaultFolderId(service);
+			var filelist = RetrieveAllFiles(service,$"mimeType = 'application/vnd.google-apps.folder' and name = '{DefaultFolder}'");
+			string folderId = filelist.Any() ? filelist.First().Id : CreateFolderAndReturnId(service, DefaultFolder);
 
 			SaveDefaultFolderInfo(folderId);
 
@@ -224,7 +224,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			return file.Id;
 		}
 
-		public static List<File> retrieveAllFiles ( DriveService service,string searchQuery )
+		public static List<File> RetrieveAllFiles ( DriveService service,string searchQuery )
 		{
 			var result = new List<File>();
 			var request = service.Files.List();
@@ -252,7 +252,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
 		private void UploadFile ( DriveService service,string fullFilename, string filename,string parentFolderId )
 		{
-			var removeLIst = retrieveAllFiles(service,$"name = '{filename}'");
+			var removeLIst = RetrieveAllFiles(service,$"name = '{filename}'");
 			foreach(var fileRemove in removeLIst)
 			{
 				service.Files.Delete(fileRemove.Id).Execute();

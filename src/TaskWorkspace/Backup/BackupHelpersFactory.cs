@@ -19,7 +19,7 @@ namespace TaskWorkspace.Backup
 				case StorageType.Dropbox:
 					return new DropboxHelper(fullFileName,filename);
 				case StorageType.Google:
-					return null;
+					return new GoogleHelper(fullFileName, filename);
 			}
 			return null;
 		}

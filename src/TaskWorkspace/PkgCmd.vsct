@@ -95,6 +95,16 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
             </Strings>
           </Menu>
 
+          <Menu guid="guidTaskWorkspaceCmdSet" id="GoogleController" priority="0x0500" type="MenuController">
+            <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" />
+            <Strings>
+              <ButtonText>Google</ButtonText>
+              <CommandName>Google</CommandName>
+            </Strings>
+          </Menu>
+
+
+
         </Menus>
 
         <!--
@@ -115,6 +125,11 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
           <Group guid="guidTaskWorkspaceCmdSet" id="DropboxControllerGroup" priority="0xFF40">
               <Parent guid="guidTaskWorkspaceCmdSet" id="DropboxController"/>
           </Group>
+
+          <Group guid="guidTaskWorkspaceCmdSet" id="GoogleControllerGroup" priority="0xFF50">
+            <Parent guid="guidTaskWorkspaceCmdSet" id="GoogleController"/>
+          </Group>
+
 
         </Groups>
 
@@ -171,6 +186,25 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
           <Button guid="guidTaskWorkspaceCmdSet" id="DropboxRestore" priority="0x0100" type="Button">
             <Parent guid="guidTaskWorkspaceCmdSet" id="DropboxControllerGroup" />
+            <CommandFlag>IconAndText</CommandFlag>
+            <Strings>
+              <ButtonText>Restore</ButtonText>
+              <CommandName>Restore</CommandName>
+            </Strings>
+          </Button>
+
+
+          <Button guid="guidTaskWorkspaceCmdSet" id="GoogleBackup" priority="0x0000" type="Button">
+            <Parent guid="guidTaskWorkspaceCmdSet" id="GoogleControllerGroup" />
+            <CommandFlag>IconAndText</CommandFlag>
+            <Strings>
+              <ButtonText>Backup</ButtonText>
+              <CommandName>Backup</CommandName>
+            </Strings>
+          </Button>
+
+          <Button guid="guidTaskWorkspaceCmdSet" id="GoogleRestore" priority="0x0100" type="Button">
+            <Parent guid="guidTaskWorkspaceCmdSet" id="GoogleControllerGroup" />
             <CommandFlag>IconAndText</CommandFlag>
             <Strings>
               <ButtonText>Restore</ButtonText>
@@ -247,6 +281,12 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
             <IDSymbol name="DropboxBackup" value="0x1310"></IDSymbol>
             <IDSymbol name="DropboxRestore" value="0x1320"></IDSymbol>
 
+
+          <!--Google-->
+          <IDSymbol name="GoogleController" value="0x1400"></IDSymbol>
+          <IDSymbol name="GoogleControllerGroup" value="0x1401"></IDSymbol>
+          <IDSymbol name="GoogleBackup" value="0x1410"></IDSymbol>
+          <IDSymbol name="GoogleRestore" value="0x1420"></IDSymbol>
 
         </GuidSymbol>
 
