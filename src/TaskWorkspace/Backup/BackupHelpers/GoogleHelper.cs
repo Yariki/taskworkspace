@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,14 +44,15 @@ namespace TaskWorkspace.Backup.BackupHelpers
 
 		public async Task<bool> UploadBackup()
 		{
+			DisableValidation();
 			try
 			{
 				var service = GetDriveService();
 				var parentFolderId = GetDefaultFolderId() ?? CreateOrGetDefaultFolderId(service);
 
 				//remove
-				var removeList = RetrieveAllFiles(service,$"name = '{_filename}'");
-				foreach(var fileRemove in removeList)
+				var removeList = RetrieveAllFiles(service, $"name = '{_filename}'");
+				foreach (var fileRemove in removeList)
 				{
 					await service.Files.Delete(fileRemove.Id).ExecuteAsync();
 				}
@@ -58,14 +61,14 @@ namespace TaskWorkspace.Backup.BackupHelpers
 				var fileMetadata = new File()
 				{
 					Name = _filename,
-					Parents = new List<string>() { parentFolderId }
+					Parents = new List<string>() {parentFolderId}
 				};
 				FilesResource.CreateMediaUpload request;
-				using(var stream = new System.IO.FileStream(_fullFileName,
-										System.IO.FileMode.Open))
+				using (var stream = new System.IO.FileStream(_fullFileName,
+					System.IO.FileMode.Open))
 				{
 					request = service.Files.Create(
-						fileMetadata,stream,DefaultMimeType);
+						fileMetadata, stream, DefaultMimeType);
 					request.Fields = "id";
 
 					await request.UploadAsync();
@@ -78,15 +81,21 @@ namespace TaskWorkspace.Backup.BackupHelpers
 				WorkspaceLogger.Log.Error(e);
 				return false;
 			}
+			finally
+			{
+				ClearValidation();
+			}
 		}
 
 		public async Task<bool> DownloadBackup()
 		{
+
+			DisableValidation();
 			try
 			{
 				var service = GetDriveService();
-				var fileList = RetrieveAllFiles(service,$"name = '{_filename}'");
-				if(!fileList.Any())
+				var fileList = RetrieveAllFiles(service, $"name = '{_filename}'");
+				if (!fileList.Any())
 				{
 					WorkspaceLogger.Log.Warn($"The '{_filename}' backup was not found.");
 					return false;
@@ -97,18 +106,19 @@ namespace TaskWorkspace.Backup.BackupHelpers
 				var memStream = new MemoryStream();
 				fileResp.MediaDownloader.ProgressChanged += progress =>
 				{
-					switch(progress.Status)
+					switch (progress.Status)
 					{
 						case DownloadStatus.Completed:
-							using(var fileStream = System.IO.File.Create(_fullFileName))
+							using (var fileStream = System.IO.File.Create(_fullFileName))
 							{
 								memStream.WriteTo(fileStream);
 								fileStream.Flush();
 							}
+
 							break;
 						case DownloadStatus.Failed:
-							if(progress.Exception != null)
-								Console.WriteLine(progress.Exception.Message);
+							if (progress.Exception != null)
+								WorkspaceLogger.Log.Error(progress.Exception);
 							break;
 
 					}
@@ -121,6 +131,10 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			{
 				WorkspaceLogger.Log.Error(e);
 				return false;
+			}
+			finally
+			{
+				ClearValidation();
 			}
 		}
 
@@ -160,7 +174,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 				scopes,
 				"Admin",
 				CancellationToken.None,
-				new FileDataStore("Daimto.GoogleDrive.Auth.Store")).Result;
+				new FileDataStore($"{DefaultFolder}.GoogleDrive.Auth.Store")).Result;
 
 			var service = new DriveService(new BaseClientService.Initializer
 			{
@@ -272,6 +286,22 @@ namespace TaskWorkspace.Backup.BackupHelpers
 					fileMetadata,stream,DefaultMimeType);
 				request.Upload();
 			}
+		}
+
+
+		// TODO: need to investigate why Drive API could not connect with https.
+		private void DisableValidation ( )
+		{
+			ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(delegate
+			{
+				return true;
+
+			});
+		}
+
+		private void ClearValidation ( )
+		{
+			ServicePointManager.ServerCertificateValidationCallback = null;
 		}
 
 	}

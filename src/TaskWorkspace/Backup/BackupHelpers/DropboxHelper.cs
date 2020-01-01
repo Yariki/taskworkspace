@@ -147,6 +147,7 @@ namespace TaskWorkspace.Backup.BackupHelpers
 			{
 				if(!isolatedStorageFile.FileExists(DropboxFile)) 
 				{
+                    WorkspaceLogger.Log.Warn("There is no saved Dropbox token.");
 					return null;
 				}
 				var stream = isolatedStorageFile.OpenFile(DropboxFile,FileMode.Open,FileAccess.Read,FileShare.Read);
