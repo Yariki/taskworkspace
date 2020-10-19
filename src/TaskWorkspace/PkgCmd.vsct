@@ -95,13 +95,13 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
             </Strings>
           </Menu>
 
-          <Menu guid="guidTaskWorkspaceCmdSet" id="GoogleController" priority="0x0500" type="MenuController">
+          <!--<Menu guid="guidTaskWorkspaceCmdSet" id="GoogleController" priority="0x0500" type="MenuController">
             <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup" />
             <Strings>
               <ButtonText>Google</ButtonText>
               <CommandName>Google</CommandName>
             </Strings>
-          </Menu>
+          </Menu>-->
 
 
 

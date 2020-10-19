@@ -77,10 +77,6 @@
     <Compile Include="TaskWorkspacePackage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="google.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <None Include="NLog.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
