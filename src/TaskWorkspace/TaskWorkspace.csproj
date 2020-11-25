@@ -61,6 +61,9 @@
     <Compile Include="Helpers\LinesReader.cs" />
     <Compile Include="Helpers\NativeHelpers.cs" />
     <Compile Include="Helpers\ServiceExtensions.cs" />
+    <Compile Include="Helpers\UIExtensions.cs" />
+    <Compile Include="Hooks\BaseHookSystem.cs" />
+    <Compile Include="Hooks\KeyboardSystem.cs" />
     <Compile Include="Infrastructure\CommandManager.cs" />
     <Compile Include="Infrastructure\WorkspaceLogger.cs" />
     <Compile Include="Model\Breakpoint.cs" />
@@ -73,6 +76,7 @@
     <Compile Include="PkgGuids.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\SolutionEventsService.cs" />
+    <Compile Include="Services\WorkspaceNameTextChangedService.cs" />
     <Compile Include="Services\WorkspaceService.cs" />
     <Compile Include="TaskWorkspacePackage.cs" />
   </ItemGroup>
@@ -86,15 +90,20 @@
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UIAutomationClient" />
+    <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
     <Reference Include="Microsoft.VisualStudio.Services.Integration, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
   </ItemGroup>
@@ -153,6 +162,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\add.png" />
     <Content Include="Resources\delete.png" />
     <Content Include="Resources\load.png" />
     <Content Include="Resources\save.png" />

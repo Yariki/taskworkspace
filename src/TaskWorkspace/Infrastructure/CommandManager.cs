@@ -20,7 +20,6 @@ namespace TaskWorkspace.Infrastructure
         private readonly Package _package;
         private readonly WorkspaceService _workspaceService;
 
-
         public CommandManager(Package package)
         {
             _package = package;
@@ -31,6 +30,7 @@ namespace TaskWorkspace.Infrastructure
             _handlers.Add(PkgCmdId.cmdDropboxRestore,DropboxRestoreCallback);
             _handlers.Add(PkgCmdId.cmdGoogleBackup, GoogleBackupCallback);
             _handlers.Add(PkgCmdId.cmdGoogleRestore,GoogleRestoreCallback);
+            _handlers.Add(PkgCmdId.cmdidAdd, AddWorkspace);
 
 
             if (ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService service)
@@ -40,8 +40,8 @@ namespace TaskWorkspace.Infrastructure
                         new CommandID(PkgGuids.GuidTaskWorkspaceCmdSet, valuePair.Key)));
 
                 var cmdSelectedWorkspaceId = new CommandID(PkgGuids.GuidTaskWorkspaceCmdSet, PkgCmdId.cmdidWorkspaces);
-                var workspaceCommand = new OleMenuCommand(new EventHandler(SelectedWorkspaceCallback), cmdSelectedWorkspaceId);
-
+                var workspaceCommand = new OleMenuCommand(new EventHandler(SelectedWorkspaceCallback), new EventHandler(ChangedSelectedWorkspaceCallback), new EventHandler(BeforeQueryStatusChangedWorkspaceCallback), cmdSelectedWorkspaceId);
+                
 
                 var cmdGetWorkspacesId =
                     new CommandID(PkgGuids.GuidTaskWorkspaceCmdSet, PkgCmdId.cmdidWorkspacesGetList);
@@ -53,6 +53,25 @@ namespace TaskWorkspace.Infrastructure
 
             _workspaceService = new WorkspaceService(ServiceProvider, ServiceProvider.GetService(typeof(IVsSolution)) as IVsSolution,
                 ServiceProvider.GetService(typeof(DTE)) as DTE,ServiceProvider.GetService(typeof(IVsUIShellDocumentWindowMgr)) as IVsUIShellDocumentWindowMgr);
+        }
+
+        private void BeforeQueryStatusChangedWorkspaceCallback(object sender, EventArgs args)
+        {
+            dynamic ctrl = sender;
+            WorkspaceLogger.Log.Debug($"New value: {ctrl.Text}");
+
+        }
+
+        private void ChangedSelectedWorkspaceCallback(object sender, EventArgs args)
+        {
+            if (!(args is OleMenuCmdEventArgs menuArgs))
+                return;
+
+
+            var newValue = menuArgs.InValue as string;
+            var vOut = menuArgs.OutValue;
+
+            WorkspaceLogger.Log.Debug($"New value: {newValue}");
         }
 
         private IServiceProvider ServiceProvider => _package;
@@ -78,6 +97,11 @@ namespace TaskWorkspace.Infrastructure
             _workspaceService?.DeleteWorkspace();
         }
 
+        private void AddWorkspace(object sender, EventArgs args)
+		{
+            _workspaceService?.AddWorkspace();
+		}
+
         private void SelectedWorkspaceCallback(object sender, EventArgs args)
         {
             
@@ -87,6 +111,8 @@ namespace TaskWorkspace.Infrastructure
             
             var newValue = menuArgs.InValue as string;
             var vOut = menuArgs.OutValue;
+
+            WorkspaceLogger.Log.Debug($"New value: {newValue}");
 
             if (vOut != IntPtr.Zero)
                 Marshal.GetNativeVariantForObject(_workspaceService.SelectedWorkspace, vOut);

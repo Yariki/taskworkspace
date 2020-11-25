@@ -138,7 +138,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     or combo box.
     -->
         <Combos>
-            <Combo guid="guidTaskWorkspaceCmdSet" id="cmdidWorkspaces" priority="0x0010" defaultWidth="100" idCommandList="cmdidWorkspacesGetList" type="DynamicCombo">
+            <Combo guid="guidTaskWorkspaceCmdSet" id="cmdidWorkspaces" priority="0x0010" defaultWidth="100" idCommandList="cmdidWorkspacesGetList" type="DropDownCombo">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
                 <CommandFlag>IconAndText</CommandFlag>
                 <CommandFlag>CommandWellOnly</CommandFlag>
@@ -151,7 +151,15 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
         <Buttons>
 
-            <Button guid="guidTaskWorkspaceCmdSet" id="cmdidSave" priority="0x0100" type="Button">
+          <Button guid="guidTaskWorkspaceCmdSet" id="cmdidAdd" priority="0x0050" type="Button">
+            <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
+            <Icon guid="addImage" id="add"/>
+            <Strings>
+              <ButtonText>Add Workspace</ButtonText>
+            </Strings>
+          </Button>
+
+          <Button guid="guidTaskWorkspaceCmdSet" id="cmdidSave" priority="0x0100" type="Button">
                 <Parent guid="guidTaskWorkspaceCmdSet" id="TaskWorkspaceToolbarGroup"/>
                 <Icon guid="saveImage" id="save"/>
                 <Strings>
@@ -222,6 +230,8 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
             <Bitmap guid="deleteImage" href="Resources\delete.png" usedList="delete"/>
 
+            <Bitmap guid="addImage" href="Resources\add.png" usedList="add"/>
+
         </Bitmaps>
     </Commands>
 
@@ -274,6 +284,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
             <IDSymbol name="cmdidDelete" value="0x2003" />
             <IDSymbol name="cmdidWorkspacesGetList" value="0x2004" />
             <IDSymbol name="cmdidWorkspaces" value="0x2005"/>
+            <IDSymbol name="cmdidAdd" value="0x2006" />
 
             <!--Dropbox-->
             <IDSymbol name="DropboxController" value="0x1300"></IDSymbol>
@@ -300,6 +311,10 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
         <GuidSymbol name="deleteImage" value="{190DDD94-471A-4B3D-B4EA-5B9D82D8767F}">
             <IDSymbol name="delete" value="1"/>
+        </GuidSymbol>
+
+        <GuidSymbol name="addImage" value="{D1D76EEF-9675-4F93-A876-C713E8A0094E}">
+          <IDSymbol name="add" value="1"/>
         </GuidSymbol>
 
 
