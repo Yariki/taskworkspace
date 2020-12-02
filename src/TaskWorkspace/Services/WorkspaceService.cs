@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Documents;
+using System.Windows.Input;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -14,6 +15,7 @@ using TaskWorkspace.Backup;
 using TaskWorkspace.DataAccess;
 using TaskWorkspace.EventArguments;
 using TaskWorkspace.Helpers;
+using TaskWorkspace.Hooks;
 using TaskWorkspace.Infrastructure;
 using TaskWorkspace.Model;
 using Breakpoint = EnvDTE.Breakpoint;
@@ -32,6 +34,8 @@ namespace TaskWorkspace.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly IVsUIShellDocumentWindowMgr _documentWindowMgr;
         private bool _isSolutionOpened;
+        //private readonly WorkspaceNameTextChangedService _nameTextChangedService;
+        //private readonly KeyboardSystem _keyboardSystem;
 
 
         private readonly WorkspaceRepository _repository;
@@ -48,6 +52,9 @@ namespace TaskWorkspace.Services
 
             _eventsService = new SolutionEventsService(_solution);
             _repository = new WorkspaceRepository(_solution);
+            //_nameTextChangedService = new WorkspaceNameTextChangedService();
+            //_keyboardSystem = new KeyboardSystem();
+            //_keyboardSystem.StartSystem();
 
             _eventsService.SolutionOpened += SolutionOpened;
             _eventsService.SolutionClosed += SolutionClosed;
@@ -63,15 +70,19 @@ namespace TaskWorkspace.Services
                 _eventsService.SolutionClosed -= SolutionClosed;
                 _eventsService.Dispose();
             }
+            //_keyboardSystem?.StopSystem();
         }
 
         public IEnumerable<string> GetWorkspaces()
         {
+
             return _isSolutionOpened ? _workspaces : new string[1];
         }
 
         public void SaveWorkspace()
         {
+            if(!_isSolutionOpened) return;
+
             if(string.IsNullOrEmpty(SelectedWorkspace))
             {
                 WorkspaceLogger.Log.Info("Selected workspace is empty");
@@ -120,8 +131,20 @@ namespace TaskWorkspace.Services
             return (breakpoints,windowsBase64);
         }
 
-        public void LoadWorkspace()
+		internal void AddWorkspace()
+		{
+            if(!_isSolutionOpened) return;
+
+            var pt = UIExtensions.GetInputWindowCoordinate();
+
+			SelectedWorkspace =  Microsoft.VisualBasic.Interaction.InputBox("Enter the name of new Workspace.","Add Workspace",string.Empty, (int)pt.X, (int)pt.Y);
+            SaveWorkspace();
+		}
+
+		public void LoadWorkspace()
         {
+            if(!_isSolutionOpened) return;
+
             if(string.IsNullOrEmpty(SelectedWorkspace))
             {
                 WorkspaceLogger.Log.Info("Selected workspace is empty");
@@ -154,6 +177,8 @@ namespace TaskWorkspace.Services
 
         public void DeleteWorkspace()
         {
+            if(!_isSolutionOpened) return;
+
             if(string.IsNullOrEmpty(SelectedWorkspace))
             {
                 WorkspaceLogger.Log.Info("Selected workspace is empty");
@@ -209,6 +234,7 @@ namespace TaskWorkspace.Services
             _isSolutionOpened = true;
             var workspaces = _repository.GetWorkspaces();
             _workspaces = workspaces ?? new List<string>();
+            //_nameTextChangedService.InitializeControls();
         }
 
         private void SolutionClosed(object sender, EventArgs e)
@@ -216,6 +242,7 @@ namespace TaskWorkspace.Services
             _isSolutionOpened = false;
             _workspaces = new List<string>();
             SelectedWorkspace = null;
+            //_nameTextChangedService.DeinitializeControls();
         }
 
         private void AddBreakpoints(List<WorkspaceBreakpoint> breakpoints)
