@@ -57,6 +57,7 @@
     <Compile Include="Backup\StorageType.cs" />
     <Compile Include="DataAccess\WorkspaceRepository.cs" />
     <Compile Include="EventArguments\OpenedSolutionArgs.cs" />
+    <Compile Include="Helpers\AsyncExtensions.cs" />
     <Compile Include="Helpers\BreakpointHelper.cs" />
     <Compile Include="Helpers\LinesReader.cs" />
     <Compile Include="Helpers\NativeHelpers.cs" />

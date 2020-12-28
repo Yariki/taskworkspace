@@ -16,10 +16,10 @@ namespace TaskWorkspace.Helpers
 			Clear();
 		}
 
-		public  async Task<bool> CanBreakpointBeSet(string filename, int line)
+		public  bool CanBreakpointBeSet(string filename, int line)
 		{
 			if (string.IsNullOrEmpty(filename) || line <= 0) return false;
-			var strLine = await GetLine(filename, line);
+			var strLine = GetLine(filename, line);
 			strLine = strLine.Trim();
 			if (string.IsNullOrEmpty(strLine)) return false;
 			if (strLine.Length == 1 && (strLine == "{" || strLine == "}")) return true;
@@ -34,11 +34,11 @@ namespace TaskWorkspace.Helpers
 			return !(child.Kind() == SyntaxKind.ClassDeclaration || child.Kind() == SyntaxKind.MethodDeclaration);
 		}
 
-		private async Task<string> GetLine(string filename, int line)
+		private string GetLine(string filename, int line)
 		{
 			var lineReader = _sourceCache.ContainsKey(filename) ? _sourceCache[filename] : GetLines(filename);
 
-			return await lineReader.ReadLine(line);
+			return lineReader.ReadLine(line);
 		}
 
 		private LinesReader GetLines(string filename)

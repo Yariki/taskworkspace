@@ -45,7 +45,7 @@ namespace TaskWorkspace.Helpers
 
 		public int Count => _lines.Max(p => p.Key);
 
-		public async Task<string> ReadLine ( int line )
+		public async Task<string> ReadLineAsync ( int line )
 		{
 			if(line <= 0 || line > _lines.Max(p => p.Key))
 			{
@@ -64,7 +64,6 @@ namespace TaskWorkspace.Helpers
 			_fileStream?.Close();
 			_lines.Clear();
 		}
-
 
 		private void Init()
 		{

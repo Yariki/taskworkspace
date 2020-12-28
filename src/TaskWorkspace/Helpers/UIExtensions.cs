@@ -17,11 +17,11 @@ namespace TaskWorkspace.Helpers
         internal static Point GetInputWindowCoordinate()
 		{
             var focusHandle = NativeHelpers.GetFocus();
-            if(!(HwndSource.FromHwnd(focusHandle).RootVisual is Window window))
+            var window = HwndSource.FromHwnd(focusHandle).RootVisual as Window;
+            if(window == null)
 			{
                 return new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - StandardInputDialogWidth, Screen.PrimaryScreen.WorkingArea.Height / 2 - StandardInputDialogHeight);
 			}
-
             var x = window.Left + window.ActualWidth / 2 - StandardInputDialogWidth;
             var y = window.Top + window.Height / 2 -  StandardInputDialogHeight;
 

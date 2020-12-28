@@ -249,17 +249,17 @@ namespace TaskWorkspace.Services
         {
             using(var breakpointHelper = new BreakpointHelper())
             {
-	            breakpoints.ForEach(async b =>
+	            breakpoints.ForEach(b =>
 	            {
 		            try
 		            {
-						if(await breakpointHelper.CanBreakpointBeSet(b.Filename,b.Line))
+						if(breakpointHelper.CanBreakpointBeSet(b.Filename,b.Line))
 						{
 							_dte.Debugger.Breakpoints.Add(File: b.Filename, Line: b.Line);
 						}
 						else
 						{
-							WorkspaceLogger.Log.Info($"Breakpoint skipped: {b.Filename}; {b.Line}");							
+							WorkspaceLogger.Log.Info($"Breakpoint skipped: {b.Filename}; {b.Line}");
 						}
 
 		            }
