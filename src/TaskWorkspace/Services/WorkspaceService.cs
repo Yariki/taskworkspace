@@ -121,12 +121,22 @@ namespace TaskWorkspace.Services
                     Enabled = breakpoint.Enabled
                 });
             }
+            
+            var listDocs = new List<WorkspaceDocument>();
+            
+            foreach (var dteWindow in _dte.Windows)
+            {
+                var wnd = dteWindow as Window;
+                if(wnd == null) continue;
+                
+                var doc = wnd.Document as Document;
+                if(doc == null) continue;
 
-            IStream stream;
-            NativeHelpers.CreateStreamOnHGlobal(IntPtr.Zero, true,out stream);
-            ErrorHandler.ThrowOnFailure(_documentWindowMgr.SaveDocumentWindowPositions(0U,stream));
-            stream.Rewind();
-            var windowsBase64 = System.Convert.ToBase64String(stream.ToByteArray());
+                listDocs.Add(new WorkspaceDocument(){ Filename = doc.FullName});
+            }
+            
+            //var json = JsonConvert.SerializeObject(listDocs);
+            var windowsBase64 = "";//System.Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
             return (breakpoints,windowsBase64);
         }

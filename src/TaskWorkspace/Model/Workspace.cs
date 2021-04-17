@@ -20,6 +20,8 @@ namespace TaskWorkspace.Model
 
         public string WindowsBase64 {get;set;}
 
+        public string WindowsFull { get; set; }
+        
         public override string ToString()
         {
             var str = new StringBuilder();
