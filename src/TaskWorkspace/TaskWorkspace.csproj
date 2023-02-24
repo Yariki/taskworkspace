@@ -119,7 +119,7 @@
       <Version>1.42.0.1778</Version>
     </PackageReference>
     <PackageReference Include="LiteDB">
-      <Version>4.1.4</Version>
+      <Version>5.0.13</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis">
       <Version>3.4.0</Version>
